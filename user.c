@@ -28,7 +28,7 @@
 // Raw pin io's, true if pressed, false if not.
 #define hours_switch_raw (!PORTAbits.RA0)
 #define mins_switch_raw (!PORTAbits.RA2)
-#define secs_switch_raw (!PORTAbits.RA4)
+#define secs_switch_raw (!PORTAbits.RA7)
 
 uint8_t silly_hour_display;
 
@@ -37,7 +37,7 @@ void init_user(){
 
   TRISAbits.TRISA0 = 1;
   TRISAbits.TRISA2 = 1;
-  TRISAbits.TRISA4 = 1;
+  TRISAbits.TRISA7 = 1;
 
   if (hours_switch_raw && mins_switch_raw && secs_switch_raw){
     // Oooh! Metrics display mode! Don't see that very often...
