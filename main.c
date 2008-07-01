@@ -89,7 +89,7 @@ void main(){
   init_meters();
   init_user();
 
-  // Setup TMR0. 8mhz/4/128/256 = 61hz pwm frequency. 
+  // Setup TMR0. 8mhz/4/256/240 = 32.5hz pwm frequency. 
   INTCONbits.T0IF = 0;
   INTCONbits.T0IE = 1;
   INTCONbits.GIE = 1;
