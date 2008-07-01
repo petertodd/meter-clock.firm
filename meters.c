@@ -64,19 +64,19 @@ void do_meters(){
 #endif
 
   if (hours_meter > hours_meter_pwm){
-    LATBbits.LATB4 = 1;
-  } else {
     LATBbits.LATB4 = 0;
+  } else {
+    LATBbits.LATB4 = 1;
   }
   if (mins_meter > mins_meter_pwm){
-    LATBbits.LATB1 = 1;
-  } else {
     LATBbits.LATB1 = 0;
+  } else {
+    LATBbits.LATB1 = 1;
   }
   if (secs_meter > secs_meter_pwm){
-    LATBbits.LATB0 = 1;
-  } else {
     LATBbits.LATB0 = 0;
+  } else {
+    LATBbits.LATB0 = 1;
   }
 }
 
