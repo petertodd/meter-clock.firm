@@ -66,8 +66,6 @@ SIGHANDLER(_tmr0_handler)
 
   save_eeprom_if_needed();
 
-  // FIXME: need to save metrics
-
   // Re-enable ourselves.
   INTCONbits.T0IF = 0;
 }
