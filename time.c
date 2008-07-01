@@ -145,9 +145,9 @@ void clear_secs(){
 }
 
 void save_time_to_rtc(){
-  ds3231_time.hours = hours_meter / 4;
-  ds3231_time.mins = mins_meter / 4;
-  ds3231_time.secs = secs_meter / 4;
+  ds3231_time.hours = (meter_range - hours_meter) / 4;
+  ds3231_time.mins = (meter_range - mins_meter) / 4;
+  ds3231_time.secs = (meter_range - secs_meter) / 4;
 
   write_time_to_ds3231();
 }
@@ -155,9 +155,11 @@ void save_time_to_rtc(){
 void load_time_from_rtc(){
   read_time_from_ds3231();
 
-  secs_meter = ds3231_time.secs * 4;
-  mins_meter = ds3231_time.mins * 4;
-  hours_meter = ds3231_time.hours * 4;
+  secs_meter = meter_range - (ds3231_time.secs * 4);
+  mins_meter = meter_range - (ds3231_time.mins * 4);
+  hours_meter = meter_range - (ds3231_time.hours * 4);
+
+  // FIXME: need to also muck with the ratio's here as well.
 }
 
 // Local Variables:
