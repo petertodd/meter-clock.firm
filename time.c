@@ -42,12 +42,21 @@
 // 8,000,000/4/256/256/4 = 7.629 
 #define num_time_tics (8)
 
-// Ratio counters.
-uint8_t ratio_count_mins = 1,ratio_count_secs = 1,ratio_count_tics = 1;
+// Ratio counters. Preset on startup to their value directly after roll-over.
+uint8_t ratio_count_mins = num_time_hours;
+uint8_t ratio_count_secs = num_time_mins;
+
+// Handled differently, due to the optimization that tics aren't actually kept
+// track of, see below.
+uint8_t ratio_count_tics = num_time_tics;
 
 void init_time(){
   init_ds3231();
   load_time_from_rtc();
+
+  // Like the ratio counts, set the values to the value directly after
+  // rollover.
+  //secs_meter = mins_meter = hours_meter = meter_range; 
 }
 
 // Sheesh, no osctune?
@@ -63,7 +72,7 @@ void do_time_int(){
   // their ratio directly and not bother keeping track of their real value.
   ratio_count_tics--;
   if (!ratio_count_tics){
-    ratio_count_tics = num_time_tics + 1;
+    ratio_count_tics = num_time_tics;
 
     // Once a second...
     if (!(secs_meter % 4))
@@ -71,8 +80,7 @@ void do_time_int(){
 
     secs_meter--;
     if (!secs_meter){
-      secs_meter = meter_range + 1;
-
+      secs_meter = meter_range;
       // One minute has passed. This the the correct place to put this sort of
       // code, when the pwm for the meter overflows, not the ratio counter.
 
@@ -104,7 +112,7 @@ void do_time_int(){
 
     ratio_count_secs--;
     if (!ratio_count_secs){
-      ratio_count_secs = num_time_mins + 1;
+      ratio_count_secs = num_time_mins;
 
       inc_mins();
     }
@@ -114,10 +122,10 @@ void do_time_int(){
 void inc_mins(){
   mins_meter--;
   if (!mins_meter)
-    mins_meter = meter_range + 1;
+    mins_meter = meter_range;
   ratio_count_mins--;
   if (!ratio_count_mins){
-    ratio_count_mins = num_time_hours + 1;
+    ratio_count_mins = num_time_hours;
 
     inc_hours();
   }
@@ -126,7 +134,7 @@ void inc_mins(){
 void inc_hours(){
   hours_meter--;
   if (!hours_meter){
-    hours_meter = meter_range + 1;
+    hours_meter = meter_range;
 
     // Saving once an hour won't exceed the eeprom's write endurance.
     save_metrics();
@@ -137,15 +145,15 @@ void inc_hours(){
 
 void clear_secs(){
   // Undo the effects of the ratio increments.
-  mins_meter += (((meter_range + 1) - secs_meter) / num_time_secs);
+  mins_meter += ((meter_range - secs_meter) / num_time_secs);
 
   // Reset to zero.
-  ratio_count_secs = num_time_secs + 1;
-  secs_meter = meter_range + 1;
+  ratio_count_secs = num_time_secs;
+  secs_meter = meter_range;
 }
 
 void save_time_to_rtc(){
-  ds3231_time.hours = (meter_range - hours_meter) / 4;
+  ds3231_time.hours = (meter_range - hours_meter) / 10;
   ds3231_time.mins = (meter_range - mins_meter) / 4;
   ds3231_time.secs = (meter_range - secs_meter) / 4;
 
@@ -157,9 +165,17 @@ void load_time_from_rtc(){
 
   secs_meter = meter_range - (ds3231_time.secs * 4);
   mins_meter = meter_range - (ds3231_time.mins * 4);
-  hours_meter = meter_range - (ds3231_time.hours * 4);
+  hours_meter = meter_range - (ds3231_time.hours * 10);
 
-  // FIXME: need to also muck with the ratio's here as well.
+  // The above has a round off error, as the fractional part was thrown away,
+  // fix that.
+  mins_meter -= (meter_range - secs_meter) / num_time_mins;
+  hours_meter -= (meter_range - mins_meter) / num_time_hours;
+
+  // Set the ratio counters as well.
+  ratio_count_tics = num_time_tics;
+  ratio_count_secs = num_time_mins - ((meter_range - secs_meter) % num_time_mins);
+  ratio_count_mins = num_time_hours - ((meter_range - mins_meter) % num_time_hours);
 }
 
 // Local Variables:
