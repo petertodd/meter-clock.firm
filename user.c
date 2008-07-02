@@ -24,6 +24,7 @@
 #include <debounce.h>
 #include <metrics.h>
 #include <ds3231.h>
+#include <meters.h>
 
 // Raw pin io's, true if pressed, false if not.
 #define hours_switch_raw (!PORTAbits.RA0)
@@ -32,45 +33,75 @@
 
 uint8_t silly_hour_display;
 
+static debounce_state_t hours_debounce,mins_debounce,secs_debounce;
+
 void init_user(){
-  uint8_t i;
+  uint8_t i,j;
 
   TRISAbits.TRISA0 = 1;
   TRISAbits.TRISA2 = 1;
   TRISAbits.TRISA7 = 1;
 
-  if (hours_switch_raw && mins_switch_raw && secs_switch_raw){
-    // Oooh! Metrics display mode! Don't see that very often...
+  if (hours_switch_raw || mins_switch_raw || secs_switch_raw){
+    // Oooh! Metrics/self-test display mode! Don't see that very often...
     inc_metric_meta();
-    save_metrics();
 
-    // Basically just cycle through the bytes in the eeprom and display them on
-    // screen forever.
+    // High and midrange tests.
+    if (hours_switch_raw || mins_switch_raw && !secs_switch_raw){
+      if (hours_switch_raw)
+        hours_meter = mins_meter = secs_meter = 1;
+      else
+        hours_meter = mins_meter = secs_meter = meter_range / 2;
+      while (1){
+        save_eeprom_if_needed();
+        do_meters();
+      }
+    }
+    else { 
+      // Metrics display.
+      //
+      // Hitting hours goes forward a byte, seconds goes backwards. Index is
+      // displayed as the hours, high and low nibbles as minutes and seconds
+      // respectively.
 
-    i = 0;
-    while (1){
-      // FIXME, not display, meters.
-#if 0
-      display_digits(
-                     i / 16,i % 16,
-                     CHAR_BLANK,CHAR_BLANK,
-                     (((uint8_t *)(&eeprom_data))[i] / 16),
-                      ((uint8_t *)(&eeprom_data))[i] % 16);
-      delay100ktcy(4);
-#endif
+      i = 0;
+      while (1){
+        hours_meter = meter_range - ((meter_range / (sizeof(eeprom_data) - 1)) * i);
+        mins_meter = meter_range - ((meter_range / 15) *
+                                    (((uint8_t *)(&eeprom_data))[i] / 16));
+        secs_meter = meter_range - ((meter_range / 15) *
+                                    (((uint8_t *)(&eeprom_data))[i] % 16));
 
-      i++;
-      if (i >= sizeof(eeprom_data))
-        i = 0;
+        if (debounce_just_pressed(hours_debounce,hours_switch_raw)){
+          inc_metric_sw_hours();
+          i++;
+          if (i >= sizeof(eeprom_data))
+            i = 0;
+        }
+        if (debounce_just_pressed(secs_debounce,secs_switch_raw)){
+          inc_metric_sw_secs();
+          i--;
+          if (i >= sizeof(eeprom_data))
+            i = sizeof(eeprom_data) - 1;
+        }
+
+        debounce_add_sample(hours_debounce,hours_switch_raw);
+        debounce_add_sample(secs_debounce,secs_switch_raw);
+
+        save_eeprom_if_needed();
+        j = 255;
+        while (j){
+          j--;
+          do_meters();
+          // slow things down a bit for the debounce code
+          delay10tcy(5);
+        }
+      }
     }
   }
-
-  silly_hour_display = eeprom_read_uint32(EEPROM_ADDR_SILLY_HOUR_DISPLAY);
 }
 
 void check_for_user_input(){
-  static debounce_state_t hours_debounce,mins_debounce,secs_debounce;
-
   if (debounce_just_pressed(hours_debounce,hours_switch_raw)){
     inc_one_hour();
     inc_metric_sw_hours();

@@ -17,15 +17,15 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 # ### BOILERPLATE ###
 
-# Makefile for 18F1220 compilation w/ SDCC.
+# Makefile for 18F1320 compilation w/ SDCC.
 
 INCLUDE=-I. -I/usr/share/sdcc/include/pic16
-LDFLAGS=-w -I/usr/share/sdcc/lib/pic16 -c -s /usr/share/gputils/lkr/18f1220.lkr 
+LDFLAGS=-w -I/usr/share/sdcc/lib/pic16 -c -s /usr/share/gputils/lkr/18f1320.lkr 
 
 # The following libraries are very important! They contain the code that jumps
 # to the initial main() function for one thing.
-LIBS=crt0i.o pic18f1220.lib libc18f.lib libsdcc.lib
-PROCESSOR=pic18f1220
+LIBS=crt0i.o pic18f1320.lib libc18f.lib libsdcc.lib
+PROCESSOR=pic18f1320
 PROCESSOR_FLAGS=-mpic16 -p$(PROCESSOR)
 SDCC=sdcc
 GPASM=gpasm
