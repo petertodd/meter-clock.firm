@@ -1,0 +1,315 @@
+gpasm-0.13.4 beta               debounce.asm7-10-2008  00:58:18          PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00001 ;--------------------------------------------------------
+               00002 ; File Created by SDCC : FreeWare ANSI-C Compiler
+               00003 ; Version 2.6.0 #4309 (Sep 23 2007)
+               00004 ; This file generated Thu Jul 10 00:58:18 2008
+               00005 ;--------------------------------------------------------
+               00006 ; PIC16 port for the Microchip 16-bit core micros
+               00007 ;--------------------------------------------------------
+               00008         list    p=18f1320
+               00009 
+               00010         radix dec
+               00011 
+               00012 ;--------------------------------------------------------
+               00013 ; public variables in this module
+               00014 ;--------------------------------------------------------
+               00015 
+               00016 ;--------------------------------------------------------
+               00017 ; extern variables in this module
+               00018 ;--------------------------------------------------------
+               00019         extern _PORTAbits
+               00020         extern _PORTBbits
+               00021         extern _LATAbits
+               00022         extern _LATBbits
+               00023         extern _TRISAbits
+               00024         extern _TRISBbits
+               00025         extern _PIE1bits
+               00026         extern _PIR1bits
+               00027         extern _IPR1bits
+               00028         extern _PIE2bits
+               00029         extern _PIR2bits
+               00030         extern _IPR2bits
+               00031         extern _EECON1bits
+               00032         extern _RCSTAbits
+               00033         extern _TXSTAbits
+               00034         extern _T3CONbits
+               00035         extern _ECCPASbits
+               00036         extern _CCP1CONbits
+               00037         extern _ADCON2bits
+               00038         extern _ADCON1bits
+               00039         extern _ADCON0bits
+               00040         extern _T2CONbits
+               00041         extern _T1CONbits
+               00042         extern _RCONbits
+               00043         extern _WDTCONbits
+               00044         extern _LVDCONbits
+               00045         extern _OSCCONbits
+               00046         extern _STATUSbits
+               00047         extern _INTCON3bits
+               00048         extern _INTCON2bits
+               00049         extern _INTCONbits
+               00050         extern _STKPTRbits
+               00051         extern _PORTA
+               00052         extern _PORTB
+               00053         extern _LATA
+               00054         extern _LATB
+gpasm-0.13.4 beta               debounce.asm7-10-2008  00:58:18          PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00055         extern _TRISA
+               00056         extern _TRISB
+               00057         extern _PIE1
+               00058         extern _PIR1
+               00059         extern _IPR1
+               00060         extern _PIE2
+               00061         extern _PIR2
+               00062         extern _IPR2
+               00063         extern _EECON1
+               00064         extern _EECON2
+               00065         extern _EEDATA
+               00066         extern _EEADR
+               00067         extern _BAUDCTL
+               00068         extern _RCSTA
+               00069         extern _TXSTA
+               00070         extern _TXREG
+               00071         extern _RCREG
+               00072         extern _SPBRG
+               00073         extern _SPBRGH
+               00074         extern _T3CON
+               00075         extern _TMR3L
+               00076         extern _TMR3H
+               00077         extern _ECCPAS
+               00078         extern _CCP1CON
+               00079         extern _CCPR1L
+               00080         extern _CCPR1H
+               00081         extern _ADCON2
+               00082         extern _ADCON1
+               00083         extern _ADCON0
+               00084         extern _ADRESL
+               00085         extern _ADRESH
+               00086         extern _T2CON
+               00087         extern _PR2
+               00088         extern _TMR2
+               00089         extern _T1CON
+               00090         extern _TMR1L
+               00091         extern _TMR1H
+               00092         extern _RCON
+               00093         extern _WDTCON
+               00094         extern _LVDCON
+               00095         extern _OSCCON
+               00096         extern _T0CON
+               00097         extern _TMR0L
+               00098         extern _TMR0H
+               00099         extern _STATUS
+               00100         extern _FSR2L
+               00101         extern _FSR2H
+               00102         extern _PLUSW2
+               00103         extern _PREINC2
+               00104         extern _POSTDEC2
+               00105         extern _POSTINC2
+               00106         extern _INDF2
+               00107         extern _BSR
+               00108         extern _FSR1L
+gpasm-0.13.4 beta               debounce.asm7-10-2008  00:58:18          PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00109         extern _FSR1H
+               00110         extern _PLUSW1
+               00111         extern _PREINC1
+               00112         extern _POSTDEC1
+               00113         extern _POSTINC1
+               00114         extern _INDF1
+               00115         extern _WREG
+               00116         extern _FSR0L
+               00117         extern _FSR0H
+               00118         extern _PLUSW0
+               00119         extern _PREINC0
+               00120         extern _POSTDEC0
+               00121         extern _POSTINC0
+               00122         extern _INDF0
+               00123         extern _INTCON3
+               00124         extern _INTCON2
+               00125         extern _INTCON
+               00126         extern _PRODL
+               00127         extern _PRODH
+               00128         extern _TABLAT
+               00129         extern _TBLPTRL
+               00130         extern _TBLPTRH
+               00131         extern _TBLPTRU
+               00132         extern _PCL
+               00133         extern _PCLATH
+               00134         extern _PCLATU
+               00135         extern _STKPTR
+               00136         extern _TOSL
+               00137         extern _TOSH
+               00138         extern _TOSU
+               00139 
+               00140 ;--------------------------------------------------------
+               00141 ; global & static initialisations
+               00142 ;--------------------------------------------------------
+               00143 ; I code from now on!
+               00144 
+               00145 
+               00146 ; Statistics:
+               00147 ; code size:       -1 (0xffffffff) bytes (3276800.00%)
+               00148 ;               2147483647 (0x7fffffff) words
+               00149 ; udata size:       0 (0x0000) bytes ( 0.00%)
+               00150 ; access size:      0 (0x0000) bytes
+               00151 
+               00152 
+gpasm-0.13.4 beta               debounce.asm7-10-2008  00:58:18          PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_ADCON0                           00000000
+_ADCON0bits                       00000000
+_ADCON1                           00000000
+_ADCON1bits                       00000000
+_ADCON2                           00000000
+_ADCON2bits                       00000000
+_ADRESH                           00000000
+_ADRESL                           00000000
+_BAUDCTL                          00000000
+_BSR                              00000000
+_CCP1CON                          00000000
+_CCP1CONbits                      00000000
+_CCPR1H                           00000000
+_CCPR1L                           00000000
+_ECCPAS                           00000000
+_ECCPASbits                       00000000
+_EEADR                            00000000
+_EECON1                           00000000
+_EECON1bits                       00000000
+_EECON2                           00000000
+_EEDATA                           00000000
+_FSR0H                            00000000
+_FSR0L                            00000000
+_FSR1H                            00000000
+_FSR1L                            00000000
+_FSR2H                            00000000
+_FSR2L                            00000000
+_INDF0                            00000000
+_INDF1                            00000000
+_INDF2                            00000000
+_INTCON                           00000000
+_INTCON2                          00000000
+_INTCON2bits                      00000000
+_INTCON3                          00000000
+_INTCON3bits                      00000000
+_INTCONbits                       00000000
+_IPR1                             00000000
+_IPR1bits                         00000000
+_IPR2                             00000000
+_IPR2bits                         00000000
+_LATA                             00000000
+_LATAbits                         00000000
+_LATB                             00000000
+_LATBbits                         00000000
+_LVDCON                           00000000
+_LVDCONbits                       00000000
+_OSCCON                           00000000
+_OSCCONbits                       00000000
+_PCL                              00000000
+_PCLATH                           00000000
+_PCLATU                           00000000
+_PIE1                             00000000
+_PIE1bits                         00000000
+gpasm-0.13.4 beta               debounce.asm7-10-2008  00:58:18          PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_PIE2                             00000000
+_PIE2bits                         00000000
+_PIR1                             00000000
+_PIR1bits                         00000000
+_PIR2                             00000000
+_PIR2bits                         00000000
+_PLUSW0                           00000000
+_PLUSW1                           00000000
+_PLUSW2                           00000000
+_PORTA                            00000000
+_PORTAbits                        00000000
+_PORTB                            00000000
+_PORTBbits                        00000000
+_POSTDEC0                         00000000
+_POSTDEC1                         00000000
+_POSTDEC2                         00000000
+_POSTINC0                         00000000
+_POSTINC1                         00000000
+_POSTINC2                         00000000
+_PR2                              00000000
+_PREINC0                          00000000
+_PREINC1                          00000000
+_PREINC2                          00000000
+_PRODH                            00000000
+_PRODL                            00000000
+_RCON                             00000000
+_RCONbits                         00000000
+_RCREG                            00000000
+_RCSTA                            00000000
+_RCSTAbits                        00000000
+_SPBRG                            00000000
+_SPBRGH                           00000000
+_STATUS                           00000000
+_STATUSbits                       00000000
+_STKPTR                           00000000
+_STKPTRbits                       00000000
+_T0CON                            00000000
+_T1CON                            00000000
+_T1CONbits                        00000000
+_T2CON                            00000000
+_T2CONbits                        00000000
+_T3CON                            00000000
+_T3CONbits                        00000000
+_TABLAT                           00000000
+_TBLPTRH                          00000000
+_TBLPTRL                          00000000
+_TBLPTRU                          00000000
+_TMR0H                            00000000
+_TMR0L                            00000000
+_TMR1H                            00000000
+_TMR1L                            00000000
+_TMR2                             00000000
+_TMR3H                            00000000
+_TMR3L                            00000000
+gpasm-0.13.4 beta               debounce.asm7-10-2008  00:58:18          PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_TOSH                             00000000
+_TOSL                             00000000
+_TOSU                             00000000
+_TRISA                            00000000
+_TRISAbits                        00000000
+_TRISB                            00000000
+_TRISBbits                        00000000
+_TXREG                            00000000
+_TXSTA                            00000000
+_TXSTAbits                        00000000
+_WDTCON                           00000000
+_WDTCONbits                       00000000
+_WREG                             00000000
+__18F1320                         00000001
+
+
+Errors   :       0
+Warnings :       0 reported,       0 suppressed
+Messages :       0 reported,       0 suppressed
+

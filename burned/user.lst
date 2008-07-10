@@ -1,0 +1,1161 @@
+gpasm-0.13.4 beta               user.asm    7-10-2008  00:58:19          PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00001 ;--------------------------------------------------------
+               00002 ; File Created by SDCC : FreeWare ANSI-C Compiler
+               00003 ; Version 2.6.0 #4309 (Sep 23 2007)
+               00004 ; This file generated Thu Jul 10 00:58:19 2008
+               00005 ;--------------------------------------------------------
+               00006 ; PIC16 port for the Microchip 16-bit core micros
+               00007 ;--------------------------------------------------------
+               00008         list    p=18f1320
+               00009 
+               00010         radix dec
+               00011 
+               00012 ;--------------------------------------------------------
+               00013 ; public variables in this module
+               00014 ;--------------------------------------------------------
+               00015         global _silly_hour_display
+               00016         global _init_user
+               00017         global _check_for_user_input
+               00018 
+               00019 ;--------------------------------------------------------
+               00020 ; extern variables in this module
+               00021 ;--------------------------------------------------------
+               00022         extern __gptrget1
+               00023         extern _PORTAbits
+               00024         extern _PORTBbits
+               00025         extern _LATAbits
+               00026         extern _LATBbits
+               00027         extern _TRISAbits
+               00028         extern _TRISBbits
+               00029         extern _PIE1bits
+               00030         extern _PIR1bits
+               00031         extern _IPR1bits
+               00032         extern _PIE2bits
+               00033         extern _PIR2bits
+               00034         extern _IPR2bits
+               00035         extern _EECON1bits
+               00036         extern _RCSTAbits
+               00037         extern _TXSTAbits
+               00038         extern _T3CONbits
+               00039         extern _ECCPASbits
+               00040         extern _CCP1CONbits
+               00041         extern _ADCON2bits
+               00042         extern _ADCON1bits
+               00043         extern _ADCON0bits
+               00044         extern _T2CONbits
+               00045         extern _T1CONbits
+               00046         extern _RCONbits
+               00047         extern _WDTCONbits
+               00048         extern _LVDCONbits
+               00049         extern _OSCCONbits
+               00050         extern _STATUSbits
+               00051         extern _INTCON3bits
+               00052         extern _INTCON2bits
+               00053         extern _INTCONbits
+               00054         extern _STKPTRbits
+gpasm-0.13.4 beta               user.asm    7-10-2008  00:58:19          PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00055         extern _eeprom_data
+               00056         extern _ds3231_time
+               00057         extern _hours_meter
+               00058         extern _mins_meter
+               00059         extern _secs_meter
+               00060         extern _PORTA
+               00061         extern _PORTB
+               00062         extern _LATA
+               00063         extern _LATB
+               00064         extern _TRISA
+               00065         extern _TRISB
+               00066         extern _PIE1
+               00067         extern _PIR1
+               00068         extern _IPR1
+               00069         extern _PIE2
+               00070         extern _PIR2
+               00071         extern _IPR2
+               00072         extern _EECON1
+               00073         extern _EECON2
+               00074         extern _EEDATA
+               00075         extern _EEADR
+               00076         extern _BAUDCTL
+               00077         extern _RCSTA
+               00078         extern _TXSTA
+               00079         extern _TXREG
+               00080         extern _RCREG
+               00081         extern _SPBRG
+               00082         extern _SPBRGH
+               00083         extern _T3CON
+               00084         extern _TMR3L
+               00085         extern _TMR3H
+               00086         extern _ECCPAS
+               00087         extern _CCP1CON
+               00088         extern _CCPR1L
+               00089         extern _CCPR1H
+               00090         extern _ADCON2
+               00091         extern _ADCON1
+               00092         extern _ADCON0
+               00093         extern _ADRESL
+               00094         extern _ADRESH
+               00095         extern _T2CON
+               00096         extern _PR2
+               00097         extern _TMR2
+               00098         extern _T1CON
+               00099         extern _TMR1L
+               00100         extern _TMR1H
+               00101         extern _RCON
+               00102         extern _WDTCON
+               00103         extern _LVDCON
+               00104         extern _OSCCON
+               00105         extern _T0CON
+               00106         extern _TMR0L
+               00107         extern _TMR0H
+               00108         extern _STATUS
+gpasm-0.13.4 beta               user.asm    7-10-2008  00:58:19          PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00109         extern _FSR2L
+               00110         extern _FSR2H
+               00111         extern _PLUSW2
+               00112         extern _PREINC2
+               00113         extern _POSTDEC2
+               00114         extern _POSTINC2
+               00115         extern _INDF2
+               00116         extern _BSR
+               00117         extern _FSR1L
+               00118         extern _FSR1H
+               00119         extern _PLUSW1
+               00120         extern _PREINC1
+               00121         extern _POSTDEC1
+               00122         extern _POSTINC1
+               00123         extern _INDF1
+               00124         extern _WREG
+               00125         extern _FSR0L
+               00126         extern _FSR0H
+               00127         extern _PLUSW0
+               00128         extern _PREINC0
+               00129         extern _POSTDEC0
+               00130         extern _POSTINC0
+               00131         extern _INDF0
+               00132         extern _INTCON3
+               00133         extern _INTCON2
+               00134         extern _INTCON
+               00135         extern _PRODL
+               00136         extern _PRODH
+               00137         extern _TABLAT
+               00138         extern _TBLPTRL
+               00139         extern _TBLPTRH
+               00140         extern _TBLPTRU
+               00141         extern _PCL
+               00142         extern _PCLATH
+               00143         extern _PCLATU
+               00144         extern _STKPTR
+               00145         extern _TOSL
+               00146         extern _TOSH
+               00147         extern _TOSU
+               00148         extern _delay10tcy
+               00149         extern _save_time_to_rtc
+               00150         extern _clear_secs
+               00151         extern _inc_hours
+               00152         extern _inc_mins
+               00153         extern _save_eeprom_if_needed
+               00154         extern _trigger_save_eeprom
+               00155         extern _do_meters
+               00156 ;--------------------------------------------------------
+               00157 ;       Equates to used internal registers
+               00158 ;--------------------------------------------------------
+  00000FD8     00159 STATUS  equ     0xfd8
+  00000FE8     00160 WREG    equ     0xfe8
+  00000FE9     00161 FSR0L   equ     0xfe9
+  00000FE1     00162 FSR1L   equ     0xfe1
+gpasm-0.13.4 beta               user.asm    7-10-2008  00:58:19          PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+  00000FD9     00163 FSR2L   equ     0xfd9
+  00000FE5     00164 POSTDEC1        equ     0xfe5
+  00000FE4     00165 PREINC1 equ     0xfe4
+  00000FF3     00166 PRODL   equ     0xff3
+               00167 
+               00168 
+               00169 ; Internal registers
+               00170 .registers      udata_ovr       0x0000
+               00171 r0x00   res     1
+               00172 r0x01   res     1
+               00173 r0x02   res     1
+               00174 r0x03   res     1
+               00175 r0x04   res     1
+               00176 
+               00177 udata_user_0    udata
+               00178 _silly_hour_display     res     1
+               00179 
+               00180 udata_user_1    udata
+               00181 _hours_debounce res     2
+               00182 
+               00183 udata_user_2    udata
+               00184 _mins_debounce  res     2
+               00185 
+               00186 udata_user_3    udata
+               00187 _secs_debounce  res     2
+               00188 
+               00189 ;--------------------------------------------------------
+               00190 ; global & static initialisations
+               00191 ;--------------------------------------------------------
+               00192 ; I code from now on!
+               00193 ; ; Starting pCode block
+               00194 S_user__check_for_user_input    code
+0000           00195 _check_for_user_input:
+               00196 ;       .line   104; user.c     void check_for_user_input(){
+0000 C000 FFE5 00197         MOVFF   r0x00, POSTDEC1
+0004 C000 FFE5 00198         MOVFF   r0x01, POSTDEC1
+0008 C000 FFE5 00199         MOVFF   r0x02, POSTDEC1
+000C C000 FFE5 00200         MOVFF   r0x03, POSTDEC1
+               00201 ;       .line   105; user.c     if (debounce_just_pressed(hours_debounce,hours_switch_raw)){
+0010 B000      00202         BTFSC   _PORTAbits, 0
+0012 D000      00203         BRA     _00186_DS_
+0014 0E7C      00204         MOVLW   0x7c
+0016 0000      00205         BANKSEL _hours_debounce
+0018 5D00      00206         SUBWF   _hours_debounce, W, B
+001A B0D8      00207         BTFSC   STATUS, 0
+001C D000      00208         BRA     _00186_DS_
+001E 6A00      00209         CLRF    r0x00
+0020 B000      00210         BTFSC   _PORTAbits, 0
+0022 2A00      00211         INCF    r0x00, F
+0024 5000      00212         MOVF    r0x00, W
+0026 80D8      00213         BSF     STATUS, 0
+0028 66E8      00214         TSTFSZ  WREG
+002A 90D8      00215         BCF     STATUS, 0
+002C 6A00      00216         CLRF    r0x00
+gpasm-0.13.4 beta               user.asm    7-10-2008  00:58:19          PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+002E 3600      00217         RLCF    r0x00, F
+               00218 ; removed redundant BANKSEL
+0030 5100      00219         MOVF    (_hours_debounce + 1), W, B
+0032 1800      00220         XORWF   r0x00, W
+0034 E000      00221         BZ      _00186_DS_
+               00222 ;       .line   106; user.c     inc_one_hour();
+0036 EC00 F000 00223         CALL    _inc_hours
+003A EC00 F000 00224         CALL    _inc_hours
+003E EC00 F000 00225         CALL    _inc_hours
+0042 EC00 F000 00226         CALL    _inc_hours
+0046 EC00 F000 00227         CALL    _inc_hours
+004A EC00 F000 00228         CALL    _inc_hours
+004E EC00 F000 00229         CALL    _inc_hours
+0052 EC00 F000 00230         CALL    _inc_hours
+0056 EC00 F000 00231         CALL    _inc_hours
+005A EC00 F000 00232         CALL    _inc_hours
+               00233 ;       .line   107; user.c     inc_metric_sw_hours();
+005E EC00 F000 00234         CALL    _trigger_save_eeprom
+0062 C000 F000 00235         MOVFF   (_eeprom_data + 4), r0x00
+0066 C000 F000 00236         MOVFF   (_eeprom_data + 5), r0x01
+006A C000 F000 00237         MOVFF   (_eeprom_data + 6), r0x02
+006E C000 F000 00238         MOVFF   (_eeprom_data + 7), r0x03
+0072 2A00      00239         INCF    r0x00, F
+0074 B0D8      00240         BTFSC   STATUS, 0
+0076 2A00      00241         INCF    r0x01, F
+0078 B0D8      00242         BTFSC   STATUS, 0
+007A 2A00      00243         INCF    r0x02, F
+007C B0D8      00244         BTFSC   STATUS, 0
+007E 2A00      00245         INCF    r0x03, F
+0080 5000      00246         MOVF    r0x00, W
+0082 0000      00247         BANKSEL (_eeprom_data + 4)
+0084 6F00      00248         MOVWF   (_eeprom_data + 4), B
+0086 5000      00249         MOVF    r0x01, W
+               00250 ; removed redundant BANKSEL
+0088 6F00      00251         MOVWF   (_eeprom_data + 5), B
+008A 5000      00252         MOVF    r0x02, W
+               00253 ; removed redundant BANKSEL
+008C 6F00      00254         MOVWF   (_eeprom_data + 6), B
+008E 5000      00255         MOVF    r0x03, W
+               00256 ; removed redundant BANKSEL
+0090 6F00      00257         MOVWF   (_eeprom_data + 7), B
+               00258 ;       .line   108; user.c     save_time_to_rtc();
+0092 EC00 F000 00259         CALL    _save_time_to_rtc
+0096           00260 _00186_DS_:
+               00261 ;       .line   115; user.c     if (debounce_just_pressed(mins_debounce,mins_switch_raw)){
+0096 B400      00262         BTFSC   _PORTAbits, 2
+0098 D000      00263         BRA     _00190_DS_
+009A 0E7C      00264         MOVLW   0x7c
+009C 0000      00265         BANKSEL _mins_debounce
+009E 5D00      00266         SUBWF   _mins_debounce, W, B
+00A0 E200      00267         BC      _00190_DS_
+00A2 6A00      00268         CLRF    r0x00
+00A4 B400      00269         BTFSC   _PORTAbits, 2
+00A6 2A00      00270         INCF    r0x00, F
+gpasm-0.13.4 beta               user.asm    7-10-2008  00:58:19          PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00A8 5000      00271         MOVF    r0x00, W
+00AA 80D8      00272         BSF     STATUS, 0
+00AC 66E8      00273         TSTFSZ  WREG
+00AE 90D8      00274         BCF     STATUS, 0
+00B0 6A00      00275         CLRF    r0x00
+00B2 3600      00276         RLCF    r0x00, F
+               00277 ; removed redundant BANKSEL
+00B4 5100      00278         MOVF    (_mins_debounce + 1), W, B
+00B6 1800      00279         XORWF   r0x00, W
+00B8 E000      00280         BZ      _00190_DS_
+               00281 ;       .line   116; user.c     inc_one_minute();
+00BA EC00 F000 00282         CALL    _inc_mins
+00BE EC00 F000 00283         CALL    _inc_mins
+00C2 EC00 F000 00284         CALL    _inc_mins
+00C6 EC00 F000 00285         CALL    _inc_mins
+               00286 ;       .line   117; user.c     inc_metric_sw_mins();
+00CA EC00 F000 00287         CALL    _trigger_save_eeprom
+00CE C000 F000 00288         MOVFF   (_eeprom_data + 8), r0x00
+00D2 C000 F000 00289         MOVFF   (_eeprom_data + 9), r0x01
+00D6 C000 F000 00290         MOVFF   (_eeprom_data + 10), r0x02
+00DA C000 F000 00291         MOVFF   (_eeprom_data + 11), r0x03
+00DE 2A00      00292         INCF    r0x00, F
+00E0 B0D8      00293         BTFSC   STATUS, 0
+00E2 2A00      00294         INCF    r0x01, F
+00E4 B0D8      00295         BTFSC   STATUS, 0
+00E6 2A00      00296         INCF    r0x02, F
+00E8 B0D8      00297         BTFSC   STATUS, 0
+00EA 2A00      00298         INCF    r0x03, F
+00EC 5000      00299         MOVF    r0x00, W
+00EE 0000      00300         BANKSEL (_eeprom_data + 8)
+00F0 6F00      00301         MOVWF   (_eeprom_data + 8), B
+00F2 5000      00302         MOVF    r0x01, W
+               00303 ; removed redundant BANKSEL
+00F4 6F00      00304         MOVWF   (_eeprom_data + 9), B
+00F6 5000      00305         MOVF    r0x02, W
+               00306 ; removed redundant BANKSEL
+00F8 6F00      00307         MOVWF   (_eeprom_data + 10), B
+00FA 5000      00308         MOVF    r0x03, W
+               00309 ; removed redundant BANKSEL
+00FC 6F00      00310         MOVWF   (_eeprom_data + 11), B
+               00311 ;       .line   118; user.c     save_time_to_rtc();
+00FE EC00 F000 00312         CALL    _save_time_to_rtc
+0102           00313 _00190_DS_:
+               00314 ;       .line   121; user.c     if (debounce_just_pressed(secs_debounce,secs_switch_raw)){
+0102 BE00      00315         BTFSC   _PORTAbits, 7
+0104 D000      00316         BRA     _00194_DS_
+0106 0E7C      00317         MOVLW   0x7c
+0108 0000      00318         BANKSEL _secs_debounce
+010A 5D00      00319         SUBWF   _secs_debounce, W, B
+010C E200      00320         BC      _00194_DS_
+010E 6A00      00321         CLRF    r0x00
+0110 BE00      00322         BTFSC   _PORTAbits, 7
+0112 2A00      00323         INCF    r0x00, F
+0114 5000      00324         MOVF    r0x00, W
+gpasm-0.13.4 beta               user.asm    7-10-2008  00:58:19          PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0116 80D8      00325         BSF     STATUS, 0
+0118 66E8      00326         TSTFSZ  WREG
+011A 90D8      00327         BCF     STATUS, 0
+011C 6A00      00328         CLRF    r0x00
+011E 3600      00329         RLCF    r0x00, F
+               00330 ; removed redundant BANKSEL
+0120 5100      00331         MOVF    (_secs_debounce + 1), W, B
+0122 1800      00332         XORWF   r0x00, W
+0124 E000      00333         BZ      _00194_DS_
+               00334 ;       .line   122; user.c     clear_secs();
+0126 EC00 F000 00335         CALL    _clear_secs
+               00336 ;       .line   123; user.c     inc_metric_sw_secs();
+012A EC00 F000 00337         CALL    _trigger_save_eeprom
+012E C000 F000 00338         MOVFF   (_eeprom_data + 12), r0x00
+0132 C000 F000 00339         MOVFF   (_eeprom_data + 13), r0x01
+0136 C000 F000 00340         MOVFF   (_eeprom_data + 14), r0x02
+013A C000 F000 00341         MOVFF   (_eeprom_data + 15), r0x03
+013E 2A00      00342         INCF    r0x00, F
+0140 B0D8      00343         BTFSC   STATUS, 0
+0142 2A00      00344         INCF    r0x01, F
+0144 B0D8      00345         BTFSC   STATUS, 0
+0146 2A00      00346         INCF    r0x02, F
+0148 B0D8      00347         BTFSC   STATUS, 0
+014A 2A00      00348         INCF    r0x03, F
+014C 5000      00349         MOVF    r0x00, W
+014E 0000      00350         BANKSEL (_eeprom_data + 12)
+0150 6F00      00351         MOVWF   (_eeprom_data + 12), B
+0152 5000      00352         MOVF    r0x01, W
+               00353 ; removed redundant BANKSEL
+0154 6F00      00354         MOVWF   (_eeprom_data + 13), B
+0156 5000      00355         MOVF    r0x02, W
+               00356 ; removed redundant BANKSEL
+0158 6F00      00357         MOVWF   (_eeprom_data + 14), B
+015A 5000      00358         MOVF    r0x03, W
+               00359 ; removed redundant BANKSEL
+015C 6F00      00360         MOVWF   (_eeprom_data + 15), B
+               00361 ;       .line   124; user.c     save_time_to_rtc();
+015E EC00 F000 00362         CALL    _save_time_to_rtc
+0162           00363 _00194_DS_:
+               00364 ;       .line   127; user.c     debounce_add_sample(hours_debounce,hours_switch_raw);
+0162 6A00      00365         CLRF    r0x00
+0164 B000      00366         BTFSC   _PORTAbits, 0
+0166 2A00      00367         INCF    r0x00, F
+0168 5000      00368         MOVF    r0x00, W
+016A 80D8      00369         BSF     STATUS, 0
+016C 66E8      00370         TSTFSZ  WREG
+016E 90D8      00371         BCF     STATUS, 0
+0170 6A00      00372         CLRF    r0x00
+0172 3600      00373         RLCF    r0x00, F
+0174 0000      00374         BANKSEL (_hours_debounce + 1)
+0176 5100      00375         MOVF    (_hours_debounce + 1), W, B
+0178 1800      00376         XORWF   r0x00, W
+017A E000      00377         BZ      _00198_DS_
+017C 0E7F      00378         MOVLW   0x7f
+gpasm-0.13.4 beta               user.asm    7-10-2008  00:58:19          PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+017E 0000      00379         BANKSEL _hours_debounce
+0180 6F00      00380         MOVWF   _hours_debounce, B
+0182 6A00      00381         CLRF    r0x00
+0184 B000      00382         BTFSC   _PORTAbits, 0
+0186 2A00      00383         INCF    r0x00, F
+0188 5000      00384         MOVF    r0x00, W
+018A 80D8      00385         BSF     STATUS, 0
+018C 66E8      00386         TSTFSZ  WREG
+018E 90D8      00387         BCF     STATUS, 0
+0190 6A00      00388         CLRF    r0x00
+0192 3600      00389         RLCF    r0x00, F
+0194 5000      00390         MOVF    r0x00, W
+               00391 ; removed redundant BANKSEL
+0196 6F00      00392         MOVWF   (_hours_debounce + 1), B
+0198           00393 _00198_DS_:
+0198 C000 F000 00394         MOVFF   _hours_debounce, r0x00
+019C 5000      00395         MOVF    r0x00, W
+019E E000      00396         BZ      _00200_DS_
+01A0 0600      00397         DECF    r0x00, F
+01A2 5000      00398         MOVF    r0x00, W
+01A4 0000      00399         BANKSEL _hours_debounce
+01A6 6F00      00400         MOVWF   _hours_debounce, B
+01A8           00401 _00200_DS_:
+               00402 ;       .line   128; user.c     debounce_add_sample(mins_debounce,mins_switch_raw);
+01A8 6A00      00403         CLRF    r0x00
+01AA B400      00404         BTFSC   _PORTAbits, 2
+01AC 2A00      00405         INCF    r0x00, F
+01AE 5000      00406         MOVF    r0x00, W
+01B0 80D8      00407         BSF     STATUS, 0
+01B2 66E8      00408         TSTFSZ  WREG
+01B4 90D8      00409         BCF     STATUS, 0
+01B6 6A00      00410         CLRF    r0x00
+01B8 3600      00411         RLCF    r0x00, F
+01BA 0000      00412         BANKSEL (_mins_debounce + 1)
+01BC 5100      00413         MOVF    (_mins_debounce + 1), W, B
+01BE 1800      00414         XORWF   r0x00, W
+01C0 E000      00415         BZ      _00202_DS_
+01C2 0E7F      00416         MOVLW   0x7f
+01C4 0000      00417         BANKSEL _mins_debounce
+01C6 6F00      00418         MOVWF   _mins_debounce, B
+01C8 6A00      00419         CLRF    r0x00
+01CA B400      00420         BTFSC   _PORTAbits, 2
+01CC 2A00      00421         INCF    r0x00, F
+01CE 5000      00422         MOVF    r0x00, W
+01D0 80D8      00423         BSF     STATUS, 0
+01D2 66E8      00424         TSTFSZ  WREG
+01D4 90D8      00425         BCF     STATUS, 0
+01D6 6A00      00426         CLRF    r0x00
+01D8 3600      00427         RLCF    r0x00, F
+01DA 5000      00428         MOVF    r0x00, W
+               00429 ; removed redundant BANKSEL
+01DC 6F00      00430         MOVWF   (_mins_debounce + 1), B
+01DE           00431 _00202_DS_:
+01DE C000 F000 00432         MOVFF   _mins_debounce, r0x00
+gpasm-0.13.4 beta               user.asm    7-10-2008  00:58:19          PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+01E2 5000      00433         MOVF    r0x00, W
+01E4 E000      00434         BZ      _00204_DS_
+01E6 0600      00435         DECF    r0x00, F
+01E8 5000      00436         MOVF    r0x00, W
+01EA 0000      00437         BANKSEL _mins_debounce
+01EC 6F00      00438         MOVWF   _mins_debounce, B
+01EE           00439 _00204_DS_:
+               00440 ;       .line   129; user.c     debounce_add_sample(secs_debounce,secs_switch_raw);
+01EE 6A00      00441         CLRF    r0x00
+01F0 BE00      00442         BTFSC   _PORTAbits, 7
+01F2 2A00      00443         INCF    r0x00, F
+01F4 5000      00444         MOVF    r0x00, W
+01F6 80D8      00445         BSF     STATUS, 0
+01F8 66E8      00446         TSTFSZ  WREG
+01FA 90D8      00447         BCF     STATUS, 0
+01FC 6A00      00448         CLRF    r0x00
+01FE 3600      00449         RLCF    r0x00, F
+0200 0000      00450         BANKSEL (_secs_debounce + 1)
+0202 5100      00451         MOVF    (_secs_debounce + 1), W, B
+0204 1800      00452         XORWF   r0x00, W
+0206 E000      00453         BZ      _00206_DS_
+0208 0E7F      00454         MOVLW   0x7f
+020A 0000      00455         BANKSEL _secs_debounce
+020C 6F00      00456         MOVWF   _secs_debounce, B
+020E 6A00      00457         CLRF    r0x00
+0210 BE00      00458         BTFSC   _PORTAbits, 7
+0212 2A00      00459         INCF    r0x00, F
+0214 5000      00460         MOVF    r0x00, W
+0216 80D8      00461         BSF     STATUS, 0
+0218 66E8      00462         TSTFSZ  WREG
+021A 90D8      00463         BCF     STATUS, 0
+021C 6A00      00464         CLRF    r0x00
+021E 3600      00465         RLCF    r0x00, F
+0220 5000      00466         MOVF    r0x00, W
+               00467 ; removed redundant BANKSEL
+0222 6F00      00468         MOVWF   (_secs_debounce + 1), B
+0224           00469 _00206_DS_:
+0224 C000 F000 00470         MOVFF   _secs_debounce, r0x00
+0228 5000      00471         MOVF    r0x00, W
+022A E000      00472         BZ      _00209_DS_
+022C 0600      00473         DECF    r0x00, F
+022E 5000      00474         MOVF    r0x00, W
+0230 0000      00475         BANKSEL _secs_debounce
+0232 6F00      00476         MOVWF   _secs_debounce, B
+0234           00477 _00209_DS_:
+0234 CFE4 F000 00478         MOVFF   PREINC1, r0x03
+0238 CFE4 F000 00479         MOVFF   PREINC1, r0x02
+023C CFE4 F000 00480         MOVFF   PREINC1, r0x01
+0240 CFE4 F000 00481         MOVFF   PREINC1, r0x00
+0244 0012      00482         RETURN  
+               00483 
+               00484 ; ; Starting pCode block
+               00485 S_user__init_user       code
+0000           00486 _init_user:
+gpasm-0.13.4 beta               user.asm    7-10-2008  00:58:19          PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00487 ;       .line   38; user.c      void init_user(){
+0000 C000 FFE5 00488         MOVFF   r0x00, POSTDEC1
+0004 C000 FFE5 00489         MOVFF   r0x01, POSTDEC1
+0008 C000 FFE5 00490         MOVFF   r0x02, POSTDEC1
+000C C000 FFE5 00491         MOVFF   r0x03, POSTDEC1
+0010 C000 FFE5 00492         MOVFF   r0x04, POSTDEC1
+               00493 ;       .line   41; user.c      TRISAbits.TRISA0 = 1;
+0014 8000      00494         BSF     _TRISAbits, 0
+               00495 ;       .line   42; user.c      TRISAbits.TRISA2 = 1;
+0016 8400      00496         BSF     _TRISAbits, 2
+               00497 ;       .line   43; user.c      TRISAbits.TRISA7 = 1;
+0018 8E00      00498         BSF     _TRISAbits, 7
+               00499 ;       .line   45; user.c      if (hours_switch_raw || mins_switch_raw || secs_switch_raw){
+001A A000      00500         BTFSS   _PORTAbits, 0
+001C D000      00501         BRA     _00142_DS_
+001E A400      00502         BTFSS   _PORTAbits, 2
+0020 D000      00503         BRA     _00142_DS_
+0022 BE00      00504         BTFSC   _PORTAbits, 7
+0024 D000      00505         BRA     _00146_DS_
+0026           00506 _00142_DS_:
+               00507 ;       .line   47; user.c      inc_metric_meta();
+0026 EC00 F000 00508         CALL    _trigger_save_eeprom
+002A C000 F000 00509         MOVFF   (_eeprom_data + 24), r0x00
+002E C000 F000 00510         MOVFF   (_eeprom_data + 25), r0x01
+0032 C000 F000 00511         MOVFF   (_eeprom_data + 26), r0x02
+0036 C000 F000 00512         MOVFF   (_eeprom_data + 27), r0x03
+003A 2A00      00513         INCF    r0x00, F
+003C B0D8      00514         BTFSC   STATUS, 0
+003E 2A00      00515         INCF    r0x01, F
+0040 B0D8      00516         BTFSC   STATUS, 0
+0042 2A00      00517         INCF    r0x02, F
+0044 B0D8      00518         BTFSC   STATUS, 0
+0046 2A00      00519         INCF    r0x03, F
+0048 5000      00520         MOVF    r0x00, W
+004A 0000      00521         BANKSEL (_eeprom_data + 24)
+004C 6F00      00522         MOVWF   (_eeprom_data + 24), B
+004E 5000      00523         MOVF    r0x01, W
+               00524 ; removed redundant BANKSEL
+0050 6F00      00525         MOVWF   (_eeprom_data + 25), B
+0052 5000      00526         MOVF    r0x02, W
+               00527 ; removed redundant BANKSEL
+0054 6F00      00528         MOVWF   (_eeprom_data + 26), B
+0056 5000      00529         MOVF    r0x03, W
+               00530 ; removed redundant BANKSEL
+0058 6F00      00531         MOVWF   (_eeprom_data + 27), B
+               00532 ;       .line   50; user.c      if (hours_switch_raw || mins_switch_raw && !secs_switch_raw){
+005A A000      00533         BTFSS   _PORTAbits, 0
+005C D000      00534         BRA     _00137_DS_
+005E B400      00535         BTFSC   _PORTAbits, 2
+0060 D000      00536         BRA     _00138_DS_
+0062 AE00      00537         BTFSS   _PORTAbits, 7
+0064 D000      00538         BRA     _00138_DS_
+0066           00539 _00137_DS_:
+               00540 ;       .line   51; user.c      if (hours_switch_raw)
+gpasm-0.13.4 beta               user.asm    7-10-2008  00:58:19          PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0066 B000      00541         BTFSC   _PORTAbits, 0
+0068 D000      00542         BRA     _00106_DS_
+               00543 ;       .line   52; user.c      hours_meter = mins_meter = secs_meter = 1;
+006A 0E01      00544         MOVLW   0x01
+006C 0000      00545         BANKSEL _secs_meter
+006E 6F00      00546         MOVWF   _secs_meter, B
+0070 0000      00547         BANKSEL _mins_meter
+0072 6F00      00548         MOVWF   _mins_meter, B
+0074 0000      00549         BANKSEL _hours_meter
+0076 6F00      00550         MOVWF   _hours_meter, B
+0078 D000      00551         BRA     _00109_DS_
+007A           00552 _00106_DS_:
+               00553 ;       .line   54; user.c      hours_meter = mins_meter = secs_meter = meter_range / 2;
+007A 0E78      00554         MOVLW   0x78
+007C 0000      00555         BANKSEL _secs_meter
+007E 6F00      00556         MOVWF   _secs_meter, B
+0080 0000      00557         BANKSEL _mins_meter
+0082 6F00      00558         MOVWF   _mins_meter, B
+0084 0000      00559         BANKSEL _hours_meter
+0086 6F00      00560         MOVWF   _hours_meter, B
+0088           00561 _00109_DS_:
+               00562 ;       .line   56; user.c      save_eeprom_if_needed();
+0088 EC00 F000 00563         CALL    _save_eeprom_if_needed
+               00564 ;       .line   57; user.c      do_meters();
+008C EC00 F000 00565         CALL    _do_meters
+0090 D000      00566         BRA     _00109_DS_
+0092           00567 _00138_DS_:
+               00568 ;       .line   67; user.c      i = 0;
+0092 6A00      00569         CLRF    r0x00
+               00570 ; ;multiply lit val:0x06 by variable r0x00 and store in r0x01
+               00571 ; ;Unrolled 8 X 8 multiplication
+               00572 ; ;FIXME: the function does not support result==WREG
+0094           00573 _00135_DS_:
+               00574 ;       .line   69; user.c      hours_meter = meter_range - ((meter_range / (sizeof(eeprom_data) - 1)) * i);
+0094 5000      00575         MOVF    r0x00, W
+0096 0D06      00576         MULLW   0x06
+0098 CFF3 F000 00577         MOVFF   PRODL, r0x01
+009C 5000      00578         MOVF    r0x01, W
+009E 08F0      00579         SUBLW   0xf0
+00A0 0000      00580         BANKSEL _hours_meter
+00A2 6F00      00581         MOVWF   _hours_meter, B
+               00582 ;       .line   71; user.c      (((uint8_t *)(&eeprom_data))[i] / 16));
+00A4 0E00      00583         MOVLW   HIGH(_eeprom_data)
+00A6 6E00      00584         MOVWF   r0x02
+00A8 0E00      00585         MOVLW   LOW(_eeprom_data)
+00AA 6E00      00586         MOVWF   r0x01
+00AC 0E80      00587         MOVLW   0x80
+00AE 6E00      00588         MOVWF   r0x03
+00B0 5000      00589         MOVF    r0x00, W
+00B2 2600      00590         ADDWF   r0x01, F
+00B4 6AE8      00591         CLRF    WREG
+00B6 2200      00592         ADDWFC  r0x02, F
+00B8 6AE8      00593         CLRF    WREG
+00BA 2200      00594         ADDWFC  r0x03, F
+gpasm-0.13.4 beta               user.asm    7-10-2008  00:58:19          PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00BC C000 FFE9 00595         MOVFF   r0x01, FSR0L
+00C0 C000 FFF3 00596         MOVFF   r0x02, PRODL
+00C4 5000      00597         MOVF    r0x03, W
+00C6 EC00 F000 00598         CALL    __gptrget1
+00CA 6E00      00599         MOVWF   r0x01
+00CC 3800      00600         SWAPF   r0x01, W
+00CE 0B0F      00601         ANDLW   0x0f
+               00602 ; ;multiply lit val:0x10 by variable r0x01 and store in r0x01
+               00603 ; ;Unrolled 8 X 8 multiplication
+               00604 ; ;FIXME: the function does not support result==WREG
+00D0 0D10      00605         MULLW   0x10
+00D2 CFF3 F000 00606         MOVFF   PRODL, r0x01
+00D6 5000      00607         MOVF    r0x01, W
+00D8 08F0      00608         SUBLW   0xf0
+00DA 0000      00609         BANKSEL _mins_meter
+00DC 6F00      00610         MOVWF   _mins_meter, B
+               00611 ;       .line   73; user.c      (((uint8_t *)(&eeprom_data))[i] % 16));
+00DE 0E00      00612         MOVLW   HIGH(_eeprom_data)
+00E0 6E00      00613         MOVWF   r0x02
+00E2 0E00      00614         MOVLW   LOW(_eeprom_data)
+00E4 6E00      00615         MOVWF   r0x01
+00E6 0E80      00616         MOVLW   0x80
+00E8 6E00      00617         MOVWF   r0x03
+00EA 5000      00618         MOVF    r0x00, W
+00EC 2600      00619         ADDWF   r0x01, F
+00EE 6AE8      00620         CLRF    WREG
+00F0 2200      00621         ADDWFC  r0x02, F
+00F2 6AE8      00622         CLRF    WREG
+00F4 2200      00623         ADDWFC  r0x03, F
+00F6 C000 FFE9 00624         MOVFF   r0x01, FSR0L
+00FA C000 FFF3 00625         MOVFF   r0x02, PRODL
+00FE 5000      00626         MOVF    r0x03, W
+0100 EC00 F000 00627         CALL    __gptrget1
+0104 6E00      00628         MOVWF   r0x01
+0106 0E0F      00629         MOVLW   0x0f
+0108 1600      00630         ANDWF   r0x01, F
+               00631 ; ;multiply lit val:0x10 by variable r0x01 and store in r0x01
+               00632 ; ;Unrolled 8 X 8 multiplication
+               00633 ; ;FIXME: the function does not support result==WREG
+010A 5000      00634         MOVF    r0x01, W
+010C 0D10      00635         MULLW   0x10
+010E CFF3 F000 00636         MOVFF   PRODL, r0x01
+0112 5000      00637         MOVF    r0x01, W
+0114 08F0      00638         SUBLW   0xf0
+0116 0000      00639         BANKSEL _secs_meter
+0118 6F00      00640         MOVWF   _secs_meter, B
+               00641 ;       .line   75; user.c      if (debounce_just_pressed(hours_debounce,hours_switch_raw)){
+011A B000      00642         BTFSC   _PORTAbits, 0
+011C D000      00643         BRA     _00114_DS_
+011E 0E7C      00644         MOVLW   0x7c
+0120 0000      00645         BANKSEL _hours_debounce
+0122 5D00      00646         SUBWF   _hours_debounce, W, B
+0124 E200      00647         BC      _00114_DS_
+0126 6A00      00648         CLRF    r0x01
+gpasm-0.13.4 beta               user.asm    7-10-2008  00:58:19          PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0128 B000      00649         BTFSC   _PORTAbits, 0
+012A 2A00      00650         INCF    r0x01, F
+012C 5000      00651         MOVF    r0x01, W
+012E 80D8      00652         BSF     STATUS, 0
+0130 66E8      00653         TSTFSZ  WREG
+0132 90D8      00654         BCF     STATUS, 0
+0134 6A00      00655         CLRF    r0x01
+0136 3600      00656         RLCF    r0x01, F
+               00657 ; removed redundant BANKSEL
+0138 5100      00658         MOVF    (_hours_debounce + 1), W, B
+013A 1800      00659         XORWF   r0x01, W
+013C E000      00660         BZ      _00114_DS_
+               00661 ;       .line   76; user.c      inc_metric_sw_hours();
+013E EC00 F000 00662         CALL    _trigger_save_eeprom
+0142 C000 F000 00663         MOVFF   (_eeprom_data + 4), r0x01
+0146 C000 F000 00664         MOVFF   (_eeprom_data + 5), r0x02
+014A C000 F000 00665         MOVFF   (_eeprom_data + 6), r0x03
+014E C000 F000 00666         MOVFF   (_eeprom_data + 7), r0x04
+0152 2A00      00667         INCF    r0x01, F
+0154 B0D8      00668         BTFSC   STATUS, 0
+0156 2A00      00669         INCF    r0x02, F
+0158 B0D8      00670         BTFSC   STATUS, 0
+015A 2A00      00671         INCF    r0x03, F
+015C B0D8      00672         BTFSC   STATUS, 0
+015E 2A00      00673         INCF    r0x04, F
+0160 5000      00674         MOVF    r0x01, W
+0162 0000      00675         BANKSEL (_eeprom_data + 4)
+0164 6F00      00676         MOVWF   (_eeprom_data + 4), B
+0166 5000      00677         MOVF    r0x02, W
+               00678 ; removed redundant BANKSEL
+0168 6F00      00679         MOVWF   (_eeprom_data + 5), B
+016A 5000      00680         MOVF    r0x03, W
+               00681 ; removed redundant BANKSEL
+016C 6F00      00682         MOVWF   (_eeprom_data + 6), B
+016E 5000      00683         MOVF    r0x04, W
+               00684 ; removed redundant BANKSEL
+0170 6F00      00685         MOVWF   (_eeprom_data + 7), B
+               00686 ;       .line   77; user.c      i++;
+0172 2A00      00687         INCF    r0x00, F
+               00688 ;       .line   78; user.c      if (i >= sizeof(eeprom_data))
+0174 0E24      00689         MOVLW   0x24
+0176 5C00      00690         SUBWF   r0x00, W
+0178 E300      00691         BNC     _00114_DS_
+               00692 ;       .line   79; user.c      i = 0;
+017A 6A00      00693         CLRF    r0x00
+017C           00694 _00114_DS_:
+               00695 ;       .line   81; user.c      if (debounce_just_pressed(secs_debounce,secs_switch_raw)){
+017C BE00      00696         BTFSC   _PORTAbits, 7
+017E D000      00697         BRA     _00120_DS_
+0180 0E7C      00698         MOVLW   0x7c
+0182 0000      00699         BANKSEL _secs_debounce
+0184 5D00      00700         SUBWF   _secs_debounce, W, B
+0186 E200      00701         BC      _00120_DS_
+0188 6A00      00702         CLRF    r0x01
+gpasm-0.13.4 beta               user.asm    7-10-2008  00:58:19          PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+018A BE00      00703         BTFSC   _PORTAbits, 7
+018C 2A00      00704         INCF    r0x01, F
+018E 5000      00705         MOVF    r0x01, W
+0190 80D8      00706         BSF     STATUS, 0
+0192 66E8      00707         TSTFSZ  WREG
+0194 90D8      00708         BCF     STATUS, 0
+0196 6A00      00709         CLRF    r0x01
+0198 3600      00710         RLCF    r0x01, F
+               00711 ; removed redundant BANKSEL
+019A 5100      00712         MOVF    (_secs_debounce + 1), W, B
+019C 1800      00713         XORWF   r0x01, W
+019E E000      00714         BZ      _00120_DS_
+               00715 ;       .line   82; user.c      inc_metric_sw_secs();
+01A0 EC00 F000 00716         CALL    _trigger_save_eeprom
+01A4 C000 F000 00717         MOVFF   (_eeprom_data + 12), r0x01
+01A8 C000 F000 00718         MOVFF   (_eeprom_data + 13), r0x02
+01AC C000 F000 00719         MOVFF   (_eeprom_data + 14), r0x03
+01B0 C000 F000 00720         MOVFF   (_eeprom_data + 15), r0x04
+01B4 2A00      00721         INCF    r0x01, F
+01B6 B0D8      00722         BTFSC   STATUS, 0
+01B8 2A00      00723         INCF    r0x02, F
+01BA B0D8      00724         BTFSC   STATUS, 0
+01BC 2A00      00725         INCF    r0x03, F
+01BE B0D8      00726         BTFSC   STATUS, 0
+01C0 2A00      00727         INCF    r0x04, F
+01C2 5000      00728         MOVF    r0x01, W
+01C4 0000      00729         BANKSEL (_eeprom_data + 12)
+01C6 6F00      00730         MOVWF   (_eeprom_data + 12), B
+01C8 5000      00731         MOVF    r0x02, W
+               00732 ; removed redundant BANKSEL
+01CA 6F00      00733         MOVWF   (_eeprom_data + 13), B
+01CC 5000      00734         MOVF    r0x03, W
+               00735 ; removed redundant BANKSEL
+01CE 6F00      00736         MOVWF   (_eeprom_data + 14), B
+01D0 5000      00737         MOVF    r0x04, W
+               00738 ; removed redundant BANKSEL
+01D2 6F00      00739         MOVWF   (_eeprom_data + 15), B
+               00740 ;       .line   83; user.c      i--;
+01D4 0600      00741         DECF    r0x00, F
+               00742 ;       .line   84; user.c      if (i >= sizeof(eeprom_data))
+01D6 0E24      00743         MOVLW   0x24
+01D8 5C00      00744         SUBWF   r0x00, W
+01DA E300      00745         BNC     _00120_DS_
+               00746 ;       .line   85; user.c      i = sizeof(eeprom_data) - 1;
+01DC 0E23      00747         MOVLW   0x23
+01DE 6E00      00748         MOVWF   r0x00
+01E0           00749 _00120_DS_:
+               00750 ;       .line   88; user.c      debounce_add_sample(hours_debounce,hours_switch_raw);
+01E0 6A00      00751         CLRF    r0x01
+01E2 B000      00752         BTFSC   _PORTAbits, 0
+01E4 2A00      00753         INCF    r0x01, F
+01E6 5000      00754         MOVF    r0x01, W
+01E8 80D8      00755         BSF     STATUS, 0
+01EA 66E8      00756         TSTFSZ  WREG
+gpasm-0.13.4 beta               user.asm    7-10-2008  00:58:19          PAGE 15
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+01EC 90D8      00757         BCF     STATUS, 0
+01EE 6A00      00758         CLRF    r0x01
+01F0 3600      00759         RLCF    r0x01, F
+01F2 0000      00760         BANKSEL (_hours_debounce + 1)
+01F4 5100      00761         MOVF    (_hours_debounce + 1), W, B
+01F6 1800      00762         XORWF   r0x01, W
+01F8 E000      00763         BZ      _00124_DS_
+01FA 0E7F      00764         MOVLW   0x7f
+01FC 0000      00765         BANKSEL _hours_debounce
+01FE 6F00      00766         MOVWF   _hours_debounce, B
+0200 6A00      00767         CLRF    r0x01
+0202 B000      00768         BTFSC   _PORTAbits, 0
+0204 2A00      00769         INCF    r0x01, F
+0206 5000      00770         MOVF    r0x01, W
+0208 80D8      00771         BSF     STATUS, 0
+020A 66E8      00772         TSTFSZ  WREG
+020C 90D8      00773         BCF     STATUS, 0
+020E 6A00      00774         CLRF    r0x01
+0210 3600      00775         RLCF    r0x01, F
+0212 5000      00776         MOVF    r0x01, W
+               00777 ; removed redundant BANKSEL
+0214 6F00      00778         MOVWF   (_hours_debounce + 1), B
+0216           00779 _00124_DS_:
+0216 C000 F000 00780         MOVFF   _hours_debounce, r0x01
+021A 5000      00781         MOVF    r0x01, W
+021C E000      00782         BZ      _00126_DS_
+021E 0600      00783         DECF    r0x01, F
+0220 5000      00784         MOVF    r0x01, W
+0222 0000      00785         BANKSEL _hours_debounce
+0224 6F00      00786         MOVWF   _hours_debounce, B
+0226           00787 _00126_DS_:
+               00788 ;       .line   89; user.c      debounce_add_sample(secs_debounce,secs_switch_raw);
+0226 6A00      00789         CLRF    r0x01
+0228 BE00      00790         BTFSC   _PORTAbits, 7
+022A 2A00      00791         INCF    r0x01, F
+022C 5000      00792         MOVF    r0x01, W
+022E 80D8      00793         BSF     STATUS, 0
+0230 66E8      00794         TSTFSZ  WREG
+0232 90D8      00795         BCF     STATUS, 0
+0234 6A00      00796         CLRF    r0x01
+0236 3600      00797         RLCF    r0x01, F
+0238 0000      00798         BANKSEL (_secs_debounce + 1)
+023A 5100      00799         MOVF    (_secs_debounce + 1), W, B
+023C 1800      00800         XORWF   r0x01, W
+023E E000      00801         BZ      _00128_DS_
+0240 0E7F      00802         MOVLW   0x7f
+0242 0000      00803         BANKSEL _secs_debounce
+0244 6F00      00804         MOVWF   _secs_debounce, B
+0246 6A00      00805         CLRF    r0x01
+0248 BE00      00806         BTFSC   _PORTAbits, 7
+024A 2A00      00807         INCF    r0x01, F
+024C 5000      00808         MOVF    r0x01, W
+024E 80D8      00809         BSF     STATUS, 0
+0250 66E8      00810         TSTFSZ  WREG
+gpasm-0.13.4 beta               user.asm    7-10-2008  00:58:19          PAGE 16
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0252 90D8      00811         BCF     STATUS, 0
+0254 6A00      00812         CLRF    r0x01
+0256 3600      00813         RLCF    r0x01, F
+0258 5000      00814         MOVF    r0x01, W
+               00815 ; removed redundant BANKSEL
+025A 6F00      00816         MOVWF   (_secs_debounce + 1), B
+025C           00817 _00128_DS_:
+025C C000 F000 00818         MOVFF   _secs_debounce, r0x01
+0260 5000      00819         MOVF    r0x01, W
+0262 E000      00820         BZ      _00130_DS_
+0264 0600      00821         DECF    r0x01, F
+0266 5000      00822         MOVF    r0x01, W
+0268 0000      00823         BANKSEL _secs_debounce
+026A 6F00      00824         MOVWF   _secs_debounce, B
+026C           00825 _00130_DS_:
+               00826 ;       .line   91; user.c      save_eeprom_if_needed();
+026C EC00 F000 00827         CALL    _save_eeprom_if_needed
+               00828 ;       .line   93; user.c      while (j){
+0270 6800      00829         SETF    r0x01
+0272           00830 _00131_DS_:
+0272 5000      00831         MOVF    r0x01, W
+0274 B4D8      00832         BTFSC   STATUS, 2
+0276 D000      00833         BRA     _00135_DS_
+               00834 ;       .line   94; user.c      j--;
+0278 0600      00835         DECF    r0x01, F
+               00836 ;       .line   95; user.c      do_meters();
+027A EC00 F000 00837         CALL    _do_meters
+               00838 ;       .line   97; user.c      delay10tcy(5);
+027E 0E05      00839         MOVLW   0x05
+0280 EC00 F000 00840         CALL    _delay10tcy
+0284 D000      00841         BRA     _00131_DS_
+0286           00842 _00146_DS_:
+0286 CFE4 F000 00843         MOVFF   PREINC1, r0x04
+028A CFE4 F000 00844         MOVFF   PREINC1, r0x03
+028E CFE4 F000 00845         MOVFF   PREINC1, r0x02
+0292 CFE4 F000 00846         MOVFF   PREINC1, r0x01
+0296 CFE4 F000 00847         MOVFF   PREINC1, r0x00
+029A 0012      00848         RETURN  
+               00849 
+               00850 
+               00851 
+               00852 ; Statistics:
+               00853 ; code size:     1250 (0x04e2) bytes ( 0.95%)
+               00854 ;                 625 (0x0271) words
+               00855 ; udata size:       7 (0x0007) bytes (10.94%)
+               00856 ; access size:      5 (0x0005) bytes
+               00857 
+               00858 
+gpasm-0.13.4 beta               user.asm    7-10-2008  00:58:19          PAGE 17
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FSR0L                             00000FE9
+FSR1L                             00000FE1
+FSR2L                             00000FD9
+POSTDEC1                          00000FE5
+PREINC1                           00000FE4
+PRODL                             00000FF3
+STATUS                            00000FD8
+WREG                              00000FE8
+_00106_DS_                        0000007A
+_00109_DS_                        00000088
+_00114_DS_                        0000017C
+_00120_DS_                        000001E0
+_00124_DS_                        00000216
+_00126_DS_                        00000226
+_00128_DS_                        0000025C
+_00130_DS_                        0000026C
+_00131_DS_                        00000272
+_00135_DS_                        00000094
+_00137_DS_                        00000066
+_00138_DS_                        00000092
+_00142_DS_                        00000026
+_00146_DS_                        00000286
+_00186_DS_                        00000096
+_00190_DS_                        00000102
+_00194_DS_                        00000162
+_00198_DS_                        00000198
+_00200_DS_                        000001A8
+_00202_DS_                        000001DE
+_00204_DS_                        000001EE
+_00206_DS_                        00000224
+_00209_DS_                        00000234
+_ADCON0                           00000000
+_ADCON0bits                       00000000
+_ADCON1                           00000000
+_ADCON1bits                       00000000
+_ADCON2                           00000000
+_ADCON2bits                       00000000
+_ADRESH                           00000000
+_ADRESL                           00000000
+_BAUDCTL                          00000000
+_BSR                              00000000
+_CCP1CON                          00000000
+_CCP1CONbits                      00000000
+_CCPR1H                           00000000
+_CCPR1L                           00000000
+_ECCPAS                           00000000
+_ECCPASbits                       00000000
+_EEADR                            00000000
+_EECON1                           00000000
+_EECON1bits                       00000000
+_EECON2                           00000000
+_EEDATA                           00000000
+_FSR0H                            00000000
+gpasm-0.13.4 beta               user.asm    7-10-2008  00:58:19          PAGE 18
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_FSR0L                            00000000
+_FSR1H                            00000000
+_FSR1L                            00000000
+_FSR2H                            00000000
+_FSR2L                            00000000
+_INDF0                            00000000
+_INDF1                            00000000
+_INDF2                            00000000
+_INTCON                           00000000
+_INTCON2                          00000000
+_INTCON2bits                      00000000
+_INTCON3                          00000000
+_INTCON3bits                      00000000
+_INTCONbits                       00000000
+_IPR1                             00000000
+_IPR1bits                         00000000
+_IPR2                             00000000
+_IPR2bits                         00000000
+_LATA                             00000000
+_LATAbits                         00000000
+_LATB                             00000000
+_LATBbits                         00000000
+_LVDCON                           00000000
+_LVDCONbits                       00000000
+_OSCCON                           00000000
+_OSCCONbits                       00000000
+_PCL                              00000000
+_PCLATH                           00000000
+_PCLATU                           00000000
+_PIE1                             00000000
+_PIE1bits                         00000000
+_PIE2                             00000000
+_PIE2bits                         00000000
+_PIR1                             00000000
+_PIR1bits                         00000000
+_PIR2                             00000000
+_PIR2bits                         00000000
+_PLUSW0                           00000000
+_PLUSW1                           00000000
+_PLUSW2                           00000000
+_PORTA                            00000000
+_PORTAbits                        00000000
+_PORTB                            00000000
+_PORTBbits                        00000000
+_POSTDEC0                         00000000
+_POSTDEC1                         00000000
+_POSTDEC2                         00000000
+_POSTINC0                         00000000
+_POSTINC1                         00000000
+_POSTINC2                         00000000
+_PR2                              00000000
+_PREINC0                          00000000
+_PREINC1                          00000000
+_PREINC2                          00000000
+gpasm-0.13.4 beta               user.asm    7-10-2008  00:58:19          PAGE 19
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_PRODH                            00000000
+_PRODL                            00000000
+_RCON                             00000000
+_RCONbits                         00000000
+_RCREG                            00000000
+_RCSTA                            00000000
+_RCSTAbits                        00000000
+_SPBRG                            00000000
+_SPBRGH                           00000000
+_STATUS                           00000000
+_STATUSbits                       00000000
+_STKPTR                           00000000
+_STKPTRbits                       00000000
+_T0CON                            00000000
+_T1CON                            00000000
+_T1CONbits                        00000000
+_T2CON                            00000000
+_T2CONbits                        00000000
+_T3CON                            00000000
+_T3CONbits                        00000000
+_TABLAT                           00000000
+_TBLPTRH                          00000000
+_TBLPTRL                          00000000
+_TBLPTRU                          00000000
+_TMR0H                            00000000
+_TMR0L                            00000000
+_TMR1H                            00000000
+_TMR1L                            00000000
+_TMR2                             00000000
+_TMR3H                            00000000
+_TMR3L                            00000000
+_TOSH                             00000000
+_TOSL                             00000000
+_TOSU                             00000000
+_TRISA                            00000000
+_TRISAbits                        00000000
+_TRISB                            00000000
+_TRISBbits                        00000000
+_TXREG                            00000000
+_TXSTA                            00000000
+_TXSTAbits                        00000000
+_WDTCON                           00000000
+_WDTCONbits                       00000000
+_WREG                             00000000
+__18F1320                         00000001
+__gptrget1                        00000000
+_check_for_user_input             00000000
+_clear_secs                       00000000
+_delay10tcy                       00000000
+_do_meters                        00000000
+_ds3231_time                      00000000
+_eeprom_data                      00000000
+_hours_debounce                   00000000
+_hours_meter                      00000000
+gpasm-0.13.4 beta               user.asm    7-10-2008  00:58:19          PAGE 20
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_inc_hours                        00000000
+_inc_mins                         00000000
+_init_user                        00000000
+_mins_debounce                    00000000
+_mins_meter                       00000000
+_save_eeprom_if_needed            00000000
+_save_time_to_rtc                 00000000
+_secs_debounce                    00000000
+_secs_meter                       00000000
+_silly_hour_display               00000000
+_trigger_save_eeprom              00000000
+r0x00                             00000000
+r0x01                             00000001
+r0x02                             00000002
+r0x03                             00000003
+r0x04                             00000004
+
+
+Errors   :       0
+Warnings :       0 reported,       0 suppressed
+Messages :       0 reported,       0 suppressed
+

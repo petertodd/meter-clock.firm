@@ -1,0 +1,562 @@
+gpasm-0.13.4 beta               i2c.asm     7-10-2008  00:58:18          PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00001 ;--------------------------------------------------------
+               00002 ; File Created by SDCC : FreeWare ANSI-C Compiler
+               00003 ; Version 2.6.0 #4309 (Sep 23 2007)
+               00004 ; This file generated Thu Jul 10 00:58:18 2008
+               00005 ;--------------------------------------------------------
+               00006 ; PIC16 port for the Microchip 16-bit core micros
+               00007 ;--------------------------------------------------------
+               00008         list    p=18f1320
+               00009 
+               00010         radix dec
+               00011 
+               00012 ;--------------------------------------------------------
+               00013 ; public variables in this module
+               00014 ;--------------------------------------------------------
+               00015         global _init_i2c
+               00016         global _i2c_reset
+               00017         global _i2c_start
+               00018         global _i2c_stop
+               00019         global _i2c_write
+               00020         global _i2c_read
+               00021 
+               00022 ;--------------------------------------------------------
+               00023 ; extern variables in this module
+               00024 ;--------------------------------------------------------
+               00025         extern _PORTAbits
+               00026         extern _PORTBbits
+               00027         extern _LATAbits
+               00028         extern _LATBbits
+               00029         extern _TRISAbits
+               00030         extern _TRISBbits
+               00031         extern _PIE1bits
+               00032         extern _PIR1bits
+               00033         extern _IPR1bits
+               00034         extern _PIE2bits
+               00035         extern _PIR2bits
+               00036         extern _IPR2bits
+               00037         extern _EECON1bits
+               00038         extern _RCSTAbits
+               00039         extern _TXSTAbits
+               00040         extern _T3CONbits
+               00041         extern _ECCPASbits
+               00042         extern _CCP1CONbits
+               00043         extern _ADCON2bits
+               00044         extern _ADCON1bits
+               00045         extern _ADCON0bits
+               00046         extern _T2CONbits
+               00047         extern _T1CONbits
+               00048         extern _RCONbits
+               00049         extern _WDTCONbits
+               00050         extern _LVDCONbits
+               00051         extern _OSCCONbits
+               00052         extern _STATUSbits
+               00053         extern _INTCON3bits
+               00054         extern _INTCON2bits
+gpasm-0.13.4 beta               i2c.asm     7-10-2008  00:58:18          PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00055         extern _INTCONbits
+               00056         extern _STKPTRbits
+               00057         extern _PORTA
+               00058         extern _PORTB
+               00059         extern _LATA
+               00060         extern _LATB
+               00061         extern _TRISA
+               00062         extern _TRISB
+               00063         extern _PIE1
+               00064         extern _PIR1
+               00065         extern _IPR1
+               00066         extern _PIE2
+               00067         extern _PIR2
+               00068         extern _IPR2
+               00069         extern _EECON1
+               00070         extern _EECON2
+               00071         extern _EEDATA
+               00072         extern _EEADR
+               00073         extern _BAUDCTL
+               00074         extern _RCSTA
+               00075         extern _TXSTA
+               00076         extern _TXREG
+               00077         extern _RCREG
+               00078         extern _SPBRG
+               00079         extern _SPBRGH
+               00080         extern _T3CON
+               00081         extern _TMR3L
+               00082         extern _TMR3H
+               00083         extern _ECCPAS
+               00084         extern _CCP1CON
+               00085         extern _CCPR1L
+               00086         extern _CCPR1H
+               00087         extern _ADCON2
+               00088         extern _ADCON1
+               00089         extern _ADCON0
+               00090         extern _ADRESL
+               00091         extern _ADRESH
+               00092         extern _T2CON
+               00093         extern _PR2
+               00094         extern _TMR2
+               00095         extern _T1CON
+               00096         extern _TMR1L
+               00097         extern _TMR1H
+               00098         extern _RCON
+               00099         extern _WDTCON
+               00100         extern _LVDCON
+               00101         extern _OSCCON
+               00102         extern _T0CON
+               00103         extern _TMR0L
+               00104         extern _TMR0H
+               00105         extern _STATUS
+               00106         extern _FSR2L
+               00107         extern _FSR2H
+               00108         extern _PLUSW2
+gpasm-0.13.4 beta               i2c.asm     7-10-2008  00:58:18          PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00109         extern _PREINC2
+               00110         extern _POSTDEC2
+               00111         extern _POSTINC2
+               00112         extern _INDF2
+               00113         extern _BSR
+               00114         extern _FSR1L
+               00115         extern _FSR1H
+               00116         extern _PLUSW1
+               00117         extern _PREINC1
+               00118         extern _POSTDEC1
+               00119         extern _POSTINC1
+               00120         extern _INDF1
+               00121         extern _WREG
+               00122         extern _FSR0L
+               00123         extern _FSR0H
+               00124         extern _PLUSW0
+               00125         extern _PREINC0
+               00126         extern _POSTDEC0
+               00127         extern _POSTINC0
+               00128         extern _INDF0
+               00129         extern _INTCON3
+               00130         extern _INTCON2
+               00131         extern _INTCON
+               00132         extern _PRODL
+               00133         extern _PRODH
+               00134         extern _TABLAT
+               00135         extern _TBLPTRL
+               00136         extern _TBLPTRH
+               00137         extern _TBLPTRU
+               00138         extern _PCL
+               00139         extern _PCLATH
+               00140         extern _PCLATU
+               00141         extern _STKPTR
+               00142         extern _TOSL
+               00143         extern _TOSH
+               00144         extern _TOSU
+               00145 ;--------------------------------------------------------
+               00146 ;       Equates to used internal registers
+               00147 ;--------------------------------------------------------
+  00000FD8     00148 STATUS  equ     0xfd8
+  00000FE8     00149 WREG    equ     0xfe8
+  00000FE1     00150 FSR1L   equ     0xfe1
+  00000FD9     00151 FSR2L   equ     0xfd9
+  00000FE5     00152 POSTDEC1        equ     0xfe5
+  00000FE4     00153 PREINC1 equ     0xfe4
+  00000FDB     00154 PLUSW2  equ     0xfdb
+               00155 
+               00156 
+               00157 ; Internal registers
+               00158 .registers      udata_ovr       0x0000
+               00159 r0x00   res     1
+               00160 r0x01   res     1
+               00161 r0x02   res     1
+               00162 
+gpasm-0.13.4 beta               i2c.asm     7-10-2008  00:58:18          PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00163 ;--------------------------------------------------------
+               00164 ; global & static initialisations
+               00165 ;--------------------------------------------------------
+               00166 ; I code from now on!
+               00167 ; ; Starting pCode block
+               00168 S_i2c__i2c_read code
+0000           00169 _i2c_read:
+               00170 ;       .line   89; i2c.c       uint8_t i2c_read(bool ack){
+0000 CFD9 FFE5 00171         MOVFF   FSR2L, POSTDEC1
+0004 CFE1 FFD9 00172         MOVFF   FSR1L, FSR2L
+0008 C000 FFE5 00173         MOVFF   r0x00, POSTDEC1
+000C C000 FFE5 00174         MOVFF   r0x01, POSTDEC1
+0010 C000 FFE5 00175         MOVFF   r0x02, POSTDEC1
+0014 0E02      00176         MOVLW   0x02
+0016 CFDB F000 00177         MOVFF   PLUSW2, r0x00
+               00178 ;       .line   90; i2c.c       uint8_t i, d = 0;
+001A 6A00      00179         CLRF    r0x01
+               00180 ;       .line   91; i2c.c       i2c_sda = 1; 
+001C 8400      00181         BSF     _TRISBbits, 2
+               00182 ;       .line   92; i2c.c       for(i = 8; i != 0; i--) {
+001E 0E08      00183         MOVLW   0x08
+0020 6E00      00184         MOVWF   r0x02
+0022           00185 _00151_DS_:
+0022 5000      00186         MOVF    r0x02, W
+0024 E000      00187         BZ      _00154_DS_
+               00188 ;       .line   94; i2c.c       d <<= 1;
+0026 5000      00189         MOVF    r0x01, W
+0028 2600      00190         ADDWF   r0x01, F
+002A           00191 _00143_DS_:
+               00192 ;       .line   96; i2c.c       i2c_scl = 1;
+002A 8600      00193         BSF     _TRISBbits, 3
+               00194 ;       .line   98; i2c.c       while(i2c_scl_in == 0); // wait for any i2c_scl clock stretching to complete
+002C A600      00195         BTFSS   _PORTBbits, 3
+002E D000      00196         BRA     _00143_DS_
+               00197 ;       .line   100; i2c.c      if (i2c_sda_in)
+0030 A400      00198         BTFSS   _PORTBbits, 2
+0032 D000      00199         BRA     _00147_DS_
+               00200 ;       .line   101; i2c.c      d |= 1;
+0034 8000      00201         BSF     r0x01, 0
+0036           00202 _00147_DS_:
+               00203 ;       .line   102; i2c.c      i2c_scl = 0;
+0036 9600      00204         BCF     _TRISBbits, 3
+               00205 ;       .line   92; i2c.c       for(i = 8; i != 0; i--) {
+0038 0600      00206         DECF    r0x02, F
+003A D000      00207         BRA     _00151_DS_
+003C           00208 _00154_DS_:
+               00209 ;       .line   105; i2c.c      if (ack)
+003C 5000      00210         MOVF    r0x00, W
+003E E000      00211         BZ      _00149_DS_
+               00212 ;       .line   106; i2c.c      i2c_sda = 0;
+0040 9400      00213         BCF     _TRISBbits, 2
+0042 D000      00214         BRA     _00150_DS_
+0044           00215 _00149_DS_:
+               00216 ;       .line   108; i2c.c      i2c_sda = 1;
+gpasm-0.13.4 beta               i2c.asm     7-10-2008  00:58:18          PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0044 8400      00217         BSF     _TRISBbits, 2
+0046           00218 _00150_DS_:
+               00219 ;       .line   111; i2c.c      i2c_scl = 1;
+0046 8600      00220         BSF     _TRISBbits, 3
+               00221 ;       .line   113; i2c.c      i2c_scl = 0;
+0048 9600      00222         BCF     _TRISBbits, 3
+               00223 ;       .line   115; i2c.c      i2c_sda = 1;
+004A 8400      00224         BSF     _TRISBbits, 2
+               00225 ;       .line   117; i2c.c      return d;
+004C 5000      00226         MOVF    r0x01, W
+004E CFE4 F000 00227         MOVFF   PREINC1, r0x02
+0052 CFE4 F000 00228         MOVFF   PREINC1, r0x01
+0056 CFE4 F000 00229         MOVFF   PREINC1, r0x00
+005A CFE4 FFD9 00230         MOVFF   PREINC1, FSR2L
+005E 0012      00231         RETURN  
+               00232 
+               00233 ; ; Starting pCode block
+               00234 S_i2c__i2c_write        code
+0000           00235 _i2c_write:
+               00236 ;       .line   59; i2c.c       bool i2c_write(uint8_t d){
+0000 CFD9 FFE5 00237         MOVFF   FSR2L, POSTDEC1
+0004 CFE1 FFD9 00238         MOVFF   FSR1L, FSR2L
+0008 C000 FFE5 00239         MOVFF   r0x00, POSTDEC1
+000C C000 FFE5 00240         MOVFF   r0x01, POSTDEC1
+0010 0E02      00241         MOVLW   0x02
+0012 CFDB F000 00242         MOVFF   PLUSW2, r0x00
+               00243 ;       .line   63; i2c.c       for(i = 8; i != 0; i--) {
+0016 0E08      00244         MOVLW   0x08
+0018 6E00      00245         MOVWF   r0x01
+001A           00246 _00128_DS_:
+001A 5000      00247         MOVF    r0x01, W
+001C E000      00248         BZ      _00131_DS_
+               00249 ;       .line   64; i2c.c       if(d & b(10000000))
+001E AE00      00250         BTFSS   r0x00, 7
+0020 D000      00251         BRA     _00126_DS_
+               00252 ;       .line   65; i2c.c       i2c_sda = 1;
+0022 8400      00253         BSF     _TRISBbits, 2
+0024 D000      00254         BRA     _00127_DS_
+0026           00255 _00126_DS_:
+               00256 ;       .line   67; i2c.c       i2c_sda = 0;
+0026 9400      00257         BCF     _TRISBbits, 2
+0028           00258 _00127_DS_:
+               00259 ;       .line   70; i2c.c       i2c_scl = 1;
+0028 8600      00260         BSF     _TRISBbits, 3
+               00261 ;       .line   72; i2c.c       i2c_scl = 0;
+002A 9600      00262         BCF     _TRISBbits, 3
+               00263 ;       .line   74; i2c.c       d <<= 1;
+002C 5000      00264         MOVF    r0x00, W
+002E 2600      00265         ADDWF   r0x00, F
+               00266 ;       .line   63; i2c.c       for(i = 8; i != 0; i--) {
+0030 0600      00267         DECF    r0x01, F
+0032 D000      00268         BRA     _00128_DS_
+0034           00269 _00131_DS_:
+               00270 ;       .line   78; i2c.c       i2c_sda = 1;
+gpasm-0.13.4 beta               i2c.asm     7-10-2008  00:58:18          PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0034 8400      00271         BSF     _TRISBbits, 2
+               00272 ;       .line   80; i2c.c       i2c_scl = 1;
+0036 8600      00273         BSF     _TRISBbits, 3
+               00274 ;       .line   83; i2c.c       b = i2c_sda_in; // possible ACK bit
+0038 6A00      00275         CLRF    r0x00
+003A B400      00276         BTFSC   _PORTBbits, 2
+003C 2A00      00277         INCF    r0x00, F
+               00278 ;       .line   84; i2c.c       i2c_scl = 0;
+003E 9600      00279         BCF     _TRISBbits, 3
+               00280 ;       .line   86; i2c.c       return b;
+0040 5000      00281         MOVF    r0x00, W
+0042 CFE4 F000 00282         MOVFF   PREINC1, r0x01
+0046 CFE4 F000 00283         MOVFF   PREINC1, r0x00
+004A CFE4 FFD9 00284         MOVFF   PREINC1, FSR2L
+004E 0012      00285         RETURN  
+               00286 
+               00287 ; ; Starting pCode block
+               00288 S_i2c__i2c_stop code
+0000           00289 _i2c_stop:
+               00290 ;       .line   51; i2c.c       i2c_sda = 0; 
+0000 9400      00291         BCF     _TRISBbits, 2
+               00292 ;       .line   53; i2c.c       i2c_scl = 1;
+0002 8600      00293         BSF     _TRISBbits, 3
+               00294 ;       .line   55; i2c.c       i2c_sda = 1;
+0004 8400      00295         BSF     _TRISBbits, 2
+0006 0012      00296         RETURN  
+               00297 
+               00298 ; ; Starting pCode block
+               00299 S_i2c__i2c_start        code
+0000           00300 _i2c_start:
+               00301 ;       .line   40; i2c.c       i2c_sda = 1;
+0000 8400      00302         BSF     _TRISBbits, 2
+               00303 ;       .line   42; i2c.c       i2c_scl = 1;
+0002 8600      00304         BSF     _TRISBbits, 3
+               00305 ;       .line   44; i2c.c       i2c_sda = 0;
+0004 9400      00306         BCF     _TRISBbits, 2
+               00307 ;       .line   46; i2c.c       i2c_scl = 0;
+0006 9600      00308         BCF     _TRISBbits, 3
+0008 0012      00309         RETURN  
+               00310 
+               00311 ; ; Starting pCode block
+               00312 S_i2c__i2c_reset        code
+0000           00313 _i2c_reset:
+               00314 ;       .line   30; i2c.c       i2c_sda = 1;
+0000 8400      00315         BSF     _TRISBbits, 2
+0002           00316 _00109_DS_:
+               00317 ;       .line   31; i2c.c       while (!i2c_sda_in){
+0002 B400      00318         BTFSC   _PORTBbits, 2
+0004 D000      00319         BRA     _00112_DS_
+               00320 ;       .line   32; i2c.c       i2c_scl = 0;
+0006 9600      00321         BCF     _TRISBbits, 3
+               00322 ;       .line   34; i2c.c       i2c_scl = 1;
+0008 8600      00323         BSF     _TRISBbits, 3
+000A D000      00324         BRA     _00109_DS_
+gpasm-0.13.4 beta               i2c.asm     7-10-2008  00:58:18          PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+000C           00325 _00112_DS_:
+000C 0012      00326         RETURN  
+               00327 
+               00328 ; ; Starting pCode block
+               00329 S_i2c__init_i2c code
+0000           00330 _init_i2c:
+               00331 ;       .line   24; i2c.c       LATBbits.LATB2 = 0;
+0000 9400      00332         BCF     _LATBbits, 2
+               00333 ;       .line   25; i2c.c       LATBbits.LATB3 = 0;
+0002 9600      00334         BCF     _LATBbits, 3
+               00335 ;       .line   26; i2c.c       i2c_stop();
+0004 EC00 F000 00336         CALL    _i2c_stop
+0008 0012      00337         RETURN  
+               00338 
+               00339 
+               00340 
+               00341 ; Statistics:
+               00342 ; code size:      218 (0x00da) bytes ( 0.17%)
+               00343 ;                 109 (0x006d) words
+               00344 ; udata size:       0 (0x0000) bytes ( 0.00%)
+               00345 ; access size:      3 (0x0003) bytes
+               00346 
+               00347 
+gpasm-0.13.4 beta               i2c.asm     7-10-2008  00:58:18          PAGE  8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FSR1L                             00000FE1
+FSR2L                             00000FD9
+PLUSW2                            00000FDB
+POSTDEC1                          00000FE5
+PREINC1                           00000FE4
+STATUS                            00000FD8
+WREG                              00000FE8
+_00109_DS_                        00000002
+_00112_DS_                        0000000C
+_00126_DS_                        00000026
+_00127_DS_                        00000028
+_00128_DS_                        0000001A
+_00131_DS_                        00000034
+_00143_DS_                        0000002A
+_00147_DS_                        00000036
+_00149_DS_                        00000044
+_00150_DS_                        00000046
+_00151_DS_                        00000022
+_00154_DS_                        0000003C
+_ADCON0                           00000000
+_ADCON0bits                       00000000
+_ADCON1                           00000000
+_ADCON1bits                       00000000
+_ADCON2                           00000000
+_ADCON2bits                       00000000
+_ADRESH                           00000000
+_ADRESL                           00000000
+_BAUDCTL                          00000000
+_BSR                              00000000
+_CCP1CON                          00000000
+_CCP1CONbits                      00000000
+_CCPR1H                           00000000
+_CCPR1L                           00000000
+_ECCPAS                           00000000
+_ECCPASbits                       00000000
+_EEADR                            00000000
+_EECON1                           00000000
+_EECON1bits                       00000000
+_EECON2                           00000000
+_EEDATA                           00000000
+_FSR0H                            00000000
+_FSR0L                            00000000
+_FSR1H                            00000000
+_FSR1L                            00000000
+_FSR2H                            00000000
+_FSR2L                            00000000
+_INDF0                            00000000
+_INDF1                            00000000
+_INDF2                            00000000
+_INTCON                           00000000
+_INTCON2                          00000000
+_INTCON2bits                      00000000
+_INTCON3                          00000000
+gpasm-0.13.4 beta               i2c.asm     7-10-2008  00:58:18          PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_INTCON3bits                      00000000
+_INTCONbits                       00000000
+_IPR1                             00000000
+_IPR1bits                         00000000
+_IPR2                             00000000
+_IPR2bits                         00000000
+_LATA                             00000000
+_LATAbits                         00000000
+_LATB                             00000000
+_LATBbits                         00000000
+_LVDCON                           00000000
+_LVDCONbits                       00000000
+_OSCCON                           00000000
+_OSCCONbits                       00000000
+_PCL                              00000000
+_PCLATH                           00000000
+_PCLATU                           00000000
+_PIE1                             00000000
+_PIE1bits                         00000000
+_PIE2                             00000000
+_PIE2bits                         00000000
+_PIR1                             00000000
+_PIR1bits                         00000000
+_PIR2                             00000000
+_PIR2bits                         00000000
+_PLUSW0                           00000000
+_PLUSW1                           00000000
+_PLUSW2                           00000000
+_PORTA                            00000000
+_PORTAbits                        00000000
+_PORTB                            00000000
+_PORTBbits                        00000000
+_POSTDEC0                         00000000
+_POSTDEC1                         00000000
+_POSTDEC2                         00000000
+_POSTINC0                         00000000
+_POSTINC1                         00000000
+_POSTINC2                         00000000
+_PR2                              00000000
+_PREINC0                          00000000
+_PREINC1                          00000000
+_PREINC2                          00000000
+_PRODH                            00000000
+_PRODL                            00000000
+_RCON                             00000000
+_RCONbits                         00000000
+_RCREG                            00000000
+_RCSTA                            00000000
+_RCSTAbits                        00000000
+_SPBRG                            00000000
+_SPBRGH                           00000000
+_STATUS                           00000000
+_STATUSbits                       00000000
+_STKPTR                           00000000
+gpasm-0.13.4 beta               i2c.asm     7-10-2008  00:58:18          PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_STKPTRbits                       00000000
+_T0CON                            00000000
+_T1CON                            00000000
+_T1CONbits                        00000000
+_T2CON                            00000000
+_T2CONbits                        00000000
+_T3CON                            00000000
+_T3CONbits                        00000000
+_TABLAT                           00000000
+_TBLPTRH                          00000000
+_TBLPTRL                          00000000
+_TBLPTRU                          00000000
+_TMR0H                            00000000
+_TMR0L                            00000000
+_TMR1H                            00000000
+_TMR1L                            00000000
+_TMR2                             00000000
+_TMR3H                            00000000
+_TMR3L                            00000000
+_TOSH                             00000000
+_TOSL                             00000000
+_TOSU                             00000000
+_TRISA                            00000000
+_TRISAbits                        00000000
+_TRISB                            00000000
+_TRISBbits                        00000000
+_TXREG                            00000000
+_TXSTA                            00000000
+_TXSTAbits                        00000000
+_WDTCON                           00000000
+_WDTCONbits                       00000000
+_WREG                             00000000
+__18F1320                         00000001
+_i2c_read                         00000000
+_i2c_reset                        00000000
+_i2c_start                        00000000
+_i2c_stop                         00000000
+_i2c_write                        00000000
+_init_i2c                         00000000
+r0x00                             00000000
+r0x01                             00000001
+r0x02                             00000002
+
+
+Errors   :       0
+Warnings :       0 reported,       0 suppressed
+Messages :       0 reported,       0 suppressed
+

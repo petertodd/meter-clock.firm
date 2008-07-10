@@ -1,0 +1,693 @@
+gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00001 ;--------------------------------------------------------
+               00002 ; File Created by SDCC : FreeWare ANSI-C Compiler
+               00003 ; Version 2.6.0 #4309 (Sep 23 2007)
+               00004 ; This file generated Thu Jul 10 00:58:18 2008
+               00005 ;--------------------------------------------------------
+               00006 ; PIC16 port for the Microchip 16-bit core micros
+               00007 ;--------------------------------------------------------
+               00008         list    p=18f1320
+               00009 
+               00010         radix dec
+               00011 
+               00012 ;--------------------------------------------------------
+               00013 ; public variables in this module
+               00014 ;--------------------------------------------------------
+               00015         global _init_ds3231
+               00016         global _from_bcd
+               00017         global _to_bcd
+               00018         global _read_time_from_ds3231
+               00019         global _write_time_to_ds3231
+               00020         global _ds3231_time
+               00021         global _read_from_ds3231
+               00022 
+               00023 ;--------------------------------------------------------
+               00024 ; extern variables in this module
+               00025 ;--------------------------------------------------------
+               00026         extern __divuchar
+               00027         extern __moduchar
+               00028         extern _PORTAbits
+               00029         extern _PORTBbits
+               00030         extern _LATAbits
+               00031         extern _LATBbits
+               00032         extern _TRISAbits
+               00033         extern _TRISBbits
+               00034         extern _PIE1bits
+               00035         extern _PIR1bits
+               00036         extern _IPR1bits
+               00037         extern _PIE2bits
+               00038         extern _PIR2bits
+               00039         extern _IPR2bits
+               00040         extern _EECON1bits
+               00041         extern _RCSTAbits
+               00042         extern _TXSTAbits
+               00043         extern _T3CONbits
+               00044         extern _ECCPASbits
+               00045         extern _CCP1CONbits
+               00046         extern _ADCON2bits
+               00047         extern _ADCON1bits
+               00048         extern _ADCON0bits
+               00049         extern _T2CONbits
+               00050         extern _T1CONbits
+               00051         extern _RCONbits
+               00052         extern _WDTCONbits
+               00053         extern _LVDCONbits
+               00054         extern _OSCCONbits
+gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00055         extern _STATUSbits
+               00056         extern _INTCON3bits
+               00057         extern _INTCON2bits
+               00058         extern _INTCONbits
+               00059         extern _STKPTRbits
+               00060         extern _eeprom_data
+               00061         extern _PORTA
+               00062         extern _PORTB
+               00063         extern _LATA
+               00064         extern _LATB
+               00065         extern _TRISA
+               00066         extern _TRISB
+               00067         extern _PIE1
+               00068         extern _PIR1
+               00069         extern _IPR1
+               00070         extern _PIE2
+               00071         extern _PIR2
+               00072         extern _IPR2
+               00073         extern _EECON1
+               00074         extern _EECON2
+               00075         extern _EEDATA
+               00076         extern _EEADR
+               00077         extern _BAUDCTL
+               00078         extern _RCSTA
+               00079         extern _TXSTA
+               00080         extern _TXREG
+               00081         extern _RCREG
+               00082         extern _SPBRG
+               00083         extern _SPBRGH
+               00084         extern _T3CON
+               00085         extern _TMR3L
+               00086         extern _TMR3H
+               00087         extern _ECCPAS
+               00088         extern _CCP1CON
+               00089         extern _CCPR1L
+               00090         extern _CCPR1H
+               00091         extern _ADCON2
+               00092         extern _ADCON1
+               00093         extern _ADCON0
+               00094         extern _ADRESL
+               00095         extern _ADRESH
+               00096         extern _T2CON
+               00097         extern _PR2
+               00098         extern _TMR2
+               00099         extern _T1CON
+               00100         extern _TMR1L
+               00101         extern _TMR1H
+               00102         extern _RCON
+               00103         extern _WDTCON
+               00104         extern _LVDCON
+               00105         extern _OSCCON
+               00106         extern _T0CON
+               00107         extern _TMR0L
+               00108         extern _TMR0H
+gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00109         extern _STATUS
+               00110         extern _FSR2L
+               00111         extern _FSR2H
+               00112         extern _PLUSW2
+               00113         extern _PREINC2
+               00114         extern _POSTDEC2
+               00115         extern _POSTINC2
+               00116         extern _INDF2
+               00117         extern _BSR
+               00118         extern _FSR1L
+               00119         extern _FSR1H
+               00120         extern _PLUSW1
+               00121         extern _PREINC1
+               00122         extern _POSTDEC1
+               00123         extern _POSTINC1
+               00124         extern _INDF1
+               00125         extern _WREG
+               00126         extern _FSR0L
+               00127         extern _FSR0H
+               00128         extern _PLUSW0
+               00129         extern _PREINC0
+               00130         extern _POSTDEC0
+               00131         extern _POSTINC0
+               00132         extern _INDF0
+               00133         extern _INTCON3
+               00134         extern _INTCON2
+               00135         extern _INTCON
+               00136         extern _PRODL
+               00137         extern _PRODH
+               00138         extern _TABLAT
+               00139         extern _TBLPTRL
+               00140         extern _TBLPTRH
+               00141         extern _TBLPTRU
+               00142         extern _PCL
+               00143         extern _PCLATH
+               00144         extern _PCLATU
+               00145         extern _STKPTR
+               00146         extern _TOSL
+               00147         extern _TOSH
+               00148         extern _TOSU
+               00149         extern _init_i2c
+               00150         extern _i2c_reset
+               00151         extern _i2c_start
+               00152         extern _i2c_stop
+               00153         extern _i2c_write
+               00154         extern _i2c_read
+               00155         extern _trigger_save_eeprom
+               00156 ;--------------------------------------------------------
+               00157 ;       Equates to used internal registers
+               00158 ;--------------------------------------------------------
+  00000FD8     00159 STATUS  equ     0xfd8
+  00000FE8     00160 WREG    equ     0xfe8
+  00000FE1     00161 FSR1L   equ     0xfe1
+  00000FD9     00162 FSR2L   equ     0xfd9
+gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+  00000FE5     00163 POSTDEC1        equ     0xfe5
+  00000FE4     00164 PREINC1 equ     0xfe4
+  00000FDB     00165 PLUSW2  equ     0xfdb
+  00000FF3     00166 PRODL   equ     0xff3
+               00167 
+               00168 
+               00169 ; Internal registers
+               00170 .registers      udata_ovr       0x0000
+               00171 r0x00   res     1
+               00172 r0x01   res     1
+               00173 r0x02   res     1
+               00174 
+               00175 udata_ds3231_0  udata
+               00176 _ds3231_time    res     3
+               00177 
+               00178 ;--------------------------------------------------------
+               00179 ; global & static initialisations
+               00180 ;--------------------------------------------------------
+               00181 ; I code from now on!
+               00182 ; ; Starting pCode block
+               00183 S_ds3231__write_time_to_ds3231  code
+0000           00184 _write_time_to_ds3231:
+               00185 ;       .line   65; ds3231.c    i2c_reset();
+0000 EC00 F000 00186         CALL    _i2c_reset
+               00187 ;       .line   66; ds3231.c    i2c_start();
+0004 EC00 F000 00188         CALL    _i2c_start
+               00189 ;       .line   67; ds3231.c    i2c_write(slave_addr_write);
+0008 0ED0      00190         MOVLW   0xd0
+000A 6EE5      00191         MOVWF   POSTDEC1
+000C EC00 F000 00192         CALL    _i2c_write
+0010 2AE1      00193         INCF    FSR1L, F
+               00194 ;       .line   68; ds3231.c    i2c_write(0);
+0012 0E00      00195         MOVLW   0x00
+0014 6AE5      00196         CLRF    POSTDEC1
+0016 EC00 F000 00197         CALL    _i2c_write
+001A 2AE1      00198         INCF    FSR1L, F
+001C 0000      00199         BANKSEL _ds3231_time
+               00200 ;       .line   69; ds3231.c    i2c_write(to_bcd(ds3231_time.secs));
+001E 5100      00201         MOVF    _ds3231_time, W, B
+0020 6EE5      00202         MOVWF   POSTDEC1
+0022 EC00 F000 00203         CALL    _to_bcd
+0026 2AE1      00204         INCF    FSR1L, F
+0028 6EE5      00205         MOVWF   POSTDEC1
+002A EC00 F000 00206         CALL    _i2c_write
+002E 2AE1      00207         INCF    FSR1L, F
+0030 0000      00208         BANKSEL (_ds3231_time + 1)
+               00209 ;       .line   70; ds3231.c    i2c_write(to_bcd(ds3231_time.mins));
+0032 5100      00210         MOVF    (_ds3231_time + 1), W, B
+0034 6EE5      00211         MOVWF   POSTDEC1
+0036 EC00 F000 00212         CALL    _to_bcd
+003A 2AE1      00213         INCF    FSR1L, F
+003C 6EE5      00214         MOVWF   POSTDEC1
+003E EC00 F000 00215         CALL    _i2c_write
+0042 2AE1      00216         INCF    FSR1L, F
+gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0044 0000      00217         BANKSEL (_ds3231_time + 2)
+               00218 ;       .line   71; ds3231.c    i2c_write(to_bcd(ds3231_time.hours));
+0046 5100      00219         MOVF    (_ds3231_time + 2), W, B
+0048 6EE5      00220         MOVWF   POSTDEC1
+004A EC00 F000 00221         CALL    _to_bcd
+004E 2AE1      00222         INCF    FSR1L, F
+0050 6EE5      00223         MOVWF   POSTDEC1
+0052 EC00 F000 00224         CALL    _i2c_write
+0056 2AE1      00225         INCF    FSR1L, F
+               00226 ;       .line   72; ds3231.c    i2c_stop();
+0058 EC00 F000 00227         CALL    _i2c_stop
+005C 0012      00228         RETURN  
+               00229 
+               00230 ; ; Starting pCode block
+               00231 S_ds3231__read_time_from_ds3231 code
+0000           00232 _read_time_from_ds3231:
+               00233 ;       .line   55; ds3231.c    void read_time_from_ds3231(){
+0000 C000 FFE5 00234         MOVFF   r0x00, POSTDEC1
+0004 C000 FFE5 00235         MOVFF   r0x01, POSTDEC1
+               00236 ;       .line   56; ds3231.c    ds3231_time.secs = from_bcd(read_from_ds3231(0));
+0008 0E00      00237         MOVLW   0x00
+000A 6AE5      00238         CLRF    POSTDEC1
+000C EC00 F000 00239         CALL    _read_from_ds3231
+0010 2AE1      00240         INCF    FSR1L, F
+0012 6EE5      00241         MOVWF   POSTDEC1
+0014 EC00 F000 00242         CALL    _from_bcd
+0018 2AE1      00243         INCF    FSR1L, F
+001A 0000      00244         BANKSEL _ds3231_time
+001C 6F00      00245         MOVWF   _ds3231_time, B
+               00246 ;       .line   57; ds3231.c    ds3231_time.mins = from_bcd(read_from_ds3231(1));
+001E 0E01      00247         MOVLW   0x01
+0020 6EE5      00248         MOVWF   POSTDEC1
+0022 EC00 F000 00249         CALL    _read_from_ds3231
+0026 2AE1      00250         INCF    FSR1L, F
+0028 6EE5      00251         MOVWF   POSTDEC1
+002A EC00 F000 00252         CALL    _from_bcd
+002E 2AE1      00253         INCF    FSR1L, F
+0030 0000      00254         BANKSEL (_ds3231_time + 1)
+0032 6F00      00255         MOVWF   (_ds3231_time + 1), B
+               00256 ;       .line   58; ds3231.c    ds3231_time.hours = from_bcd(read_from_ds3231(2));
+0034 0E02      00257         MOVLW   0x02
+0036 6EE5      00258         MOVWF   POSTDEC1
+0038 EC00 F000 00259         CALL    _read_from_ds3231
+003C 2AE1      00260         INCF    FSR1L, F
+003E 6EE5      00261         MOVWF   POSTDEC1
+0040 EC00 F000 00262         CALL    _from_bcd
+0044 2AE1      00263         INCF    FSR1L, F
+0046 0000      00264         BANKSEL (_ds3231_time + 2)
+0048 6F00      00265         MOVWF   (_ds3231_time + 2), B
+               00266 ;       .line   61; ds3231.c    new_temp_sample(read_from_ds3231(0x11));
+004A 0E11      00267         MOVLW   0x11
+004C 6EE5      00268         MOVWF   POSTDEC1
+004E EC00 F000 00269         CALL    _read_from_ds3231
+0052 6E00      00270         MOVWF   r0x00
+gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0054 2AE1      00271         INCF    FSR1L, F
+0056 0000      00272         BANKSEL (_eeprom_data + 16)
+0058 5100      00273         MOVF    (_eeprom_data + 16), W, B
+005A 0F80      00274         ADDLW   0x80
+005C 6EF3      00275         MOVWF   PRODL
+005E 5000      00276         MOVF    r0x00, W
+0060 0F80      00277         ADDLW   0x80
+0062 5CF3      00278         SUBWF   PRODL, W
+0064 E200      00279         BC      _00122_DS_
+0066 0E11      00280         MOVLW   0x11
+0068 6EE5      00281         MOVWF   POSTDEC1
+006A EC00 F000 00282         CALL    _read_from_ds3231
+006E 2AE1      00283         INCF    FSR1L, F
+0070 6A00      00284         CLRF    r0x01
+0072 0000      00285         BANKSEL (_eeprom_data + 16)
+0074 6F00      00286         MOVWF   (_eeprom_data + 16), B
+0076 5000      00287         MOVF    r0x01, W
+               00288 ; removed redundant BANKSEL
+0078 6B00      00289         CLRF    (_eeprom_data + 17), B
+               00290 ; removed redundant BANKSEL
+007A 6B00      00291         CLRF    (_eeprom_data + 18), B
+               00292 ; removed redundant BANKSEL
+007C 6B00      00293         CLRF    (_eeprom_data + 19), B
+007E EC00 F000 00294         CALL    _trigger_save_eeprom
+0082           00295 _00122_DS_:
+0082 0E11      00296         MOVLW   0x11
+0084 6EE5      00297         MOVWF   POSTDEC1
+0086 EC00 F000 00298         CALL    _read_from_ds3231
+008A 6E00      00299         MOVWF   r0x00
+008C 2AE1      00300         INCF    FSR1L, F
+008E 0000      00301         BANKSEL (_eeprom_data + 20)
+0090 5100      00302         MOVF    (_eeprom_data + 20), W, B
+0092 6E00      00303         MOVWF   r0x01
+0094 5000      00304         MOVF    r0x00, W
+0096 0F80      00305         ADDLW   0x80
+0098 6EF3      00306         MOVWF   PRODL
+009A 5000      00307         MOVF    r0x01, W
+009C 0F80      00308         ADDLW   0x80
+009E 5CF3      00309         SUBWF   PRODL, W
+00A0 E200      00310         BC      _00125_DS_
+00A2 0E11      00311         MOVLW   0x11
+00A4 6EE5      00312         MOVWF   POSTDEC1
+00A6 EC00 F000 00313         CALL    _read_from_ds3231
+00AA 2AE1      00314         INCF    FSR1L, F
+00AC 6A00      00315         CLRF    r0x01
+00AE 0000      00316         BANKSEL (_eeprom_data + 20)
+00B0 6F00      00317         MOVWF   (_eeprom_data + 20), B
+00B2 5000      00318         MOVF    r0x01, W
+               00319 ; removed redundant BANKSEL
+00B4 6B00      00320         CLRF    (_eeprom_data + 21), B
+               00321 ; removed redundant BANKSEL
+00B6 6B00      00322         CLRF    (_eeprom_data + 22), B
+               00323 ; removed redundant BANKSEL
+00B8 6B00      00324         CLRF    (_eeprom_data + 23), B
+gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00BA EC00 F000 00325         CALL    _trigger_save_eeprom
+00BE           00326 _00125_DS_:
+00BE CFE4 F000 00327         MOVFF   PREINC1, r0x01
+00C2 CFE4 F000 00328         MOVFF   PREINC1, r0x00
+00C6 0012      00329         RETURN  
+               00330 
+               00331 ; ; Starting pCode block
+               00332 S_ds3231__read_from_ds3231      code
+0000           00333 _read_from_ds3231:
+               00334 ;       .line   42; ds3231.c    uint8_t read_from_ds3231(uint8_t addr){
+0000 CFD9 FFE5 00335         MOVFF   FSR2L, POSTDEC1
+0004 CFE1 FFD9 00336         MOVFF   FSR1L, FSR2L
+0008 C000 FFE5 00337         MOVFF   r0x00, POSTDEC1
+000C 0E02      00338         MOVLW   0x02
+000E CFDB F000 00339         MOVFF   PLUSW2, r0x00
+               00340 ;       .line   44; ds3231.c    i2c_reset();
+0012 EC00 F000 00341         CALL    _i2c_reset
+               00342 ;       .line   45; ds3231.c    i2c_start();
+0016 EC00 F000 00343         CALL    _i2c_start
+               00344 ;       .line   46; ds3231.c    i2c_write(slave_addr_write);
+001A 0ED0      00345         MOVLW   0xd0
+001C 6EE5      00346         MOVWF   POSTDEC1
+001E EC00 F000 00347         CALL    _i2c_write
+0022 2AE1      00348         INCF    FSR1L, F
+               00349 ;       .line   47; ds3231.c    i2c_write(addr);
+0024 5000      00350         MOVF    r0x00, W
+0026 6EE5      00351         MOVWF   POSTDEC1
+0028 EC00 F000 00352         CALL    _i2c_write
+002C 2AE1      00353         INCF    FSR1L, F
+               00354 ;       .line   48; ds3231.c    i2c_start();
+002E EC00 F000 00355         CALL    _i2c_start
+               00356 ;       .line   49; ds3231.c    i2c_write(slave_addr_read);
+0032 0ED1      00357         MOVLW   0xd1
+0034 6EE5      00358         MOVWF   POSTDEC1
+0036 EC00 F000 00359         CALL    _i2c_write
+003A 2AE1      00360         INCF    FSR1L, F
+               00361 ;       .line   50; ds3231.c    r = i2c_read(true);
+003C 0E01      00362         MOVLW   0x01
+003E 6EE5      00363         MOVWF   POSTDEC1
+0040 EC00 F000 00364         CALL    _i2c_read
+0044 6E00      00365         MOVWF   r0x00
+0046 2AE1      00366         INCF    FSR1L, F
+               00367 ;       .line   51; ds3231.c    i2c_stop();
+0048 EC00 F000 00368         CALL    _i2c_stop
+               00369 ;       .line   52; ds3231.c    return r;
+004C 5000      00370         MOVF    r0x00, W
+004E CFE4 F000 00371         MOVFF   PREINC1, r0x00
+0052 CFE4 FFD9 00372         MOVFF   PREINC1, FSR2L
+0056 0012      00373         RETURN  
+               00374 
+               00375 ; ; Starting pCode block
+               00376 S_ds3231__to_bcd        code
+0000           00377 _to_bcd:
+               00378 ;       .line   38; ds3231.c    uint8_t to_bcd(uint8_t d){
+gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0000 CFD9 FFE5 00379         MOVFF   FSR2L, POSTDEC1
+0004 CFE1 FFD9 00380         MOVFF   FSR1L, FSR2L
+0008 C000 FFE5 00381         MOVFF   r0x00, POSTDEC1
+000C C000 FFE5 00382         MOVFF   r0x01, POSTDEC1
+0010 C000 FFE5 00383         MOVFF   r0x02, POSTDEC1
+0014 0E02      00384         MOVLW   0x02
+0016 CFDB F000 00385         MOVFF   PLUSW2, r0x00
+               00386 ;       .line   39; ds3231.c    return (((d / 10) << 4) & b(11110000)) | ((d % 10) & b(00001111));
+001A 0E0A      00387         MOVLW   0x0a
+001C 6EE5      00388         MOVWF   POSTDEC1
+001E C000 FFE5 00389         MOVFF   r0x00, POSTDEC1
+0022 EC00 F000 00390         CALL    __divuchar
+0026 6E00      00391         MOVWF   r0x01
+0028 50E4      00392         MOVF    PREINC1, W
+002A 50E4      00393         MOVF    PREINC1, W
+002C 3800      00394         SWAPF   r0x01, W
+002E 0BF0      00395         ANDLW   0xf0
+0030 6E00      00396         MOVWF   r0x02
+0032 0EF0      00397         MOVLW   0xf0
+0034 1400      00398         ANDWF   r0x02, W
+0036 6E00      00399         MOVWF   r0x01
+0038 0E0A      00400         MOVLW   0x0a
+003A 6EE5      00401         MOVWF   POSTDEC1
+003C C000 FFE5 00402         MOVFF   r0x00, POSTDEC1
+0040 EC00 F000 00403         CALL    __moduchar
+0044 6E00      00404         MOVWF   r0x00
+0046 50E4      00405         MOVF    PREINC1, W
+0048 50E4      00406         MOVF    PREINC1, W
+004A 0E0F      00407         MOVLW   0x0f
+004C 1600      00408         ANDWF   r0x00, F
+004E 5000      00409         MOVF    r0x00, W
+0050 1200      00410         IORWF   r0x01, F
+0052 5000      00411         MOVF    r0x01, W
+0054 CFE4 F000 00412         MOVFF   PREINC1, r0x02
+0058 CFE4 F000 00413         MOVFF   PREINC1, r0x01
+005C CFE4 F000 00414         MOVFF   PREINC1, r0x00
+0060 CFE4 FFD9 00415         MOVFF   PREINC1, FSR2L
+0064 0012      00416         RETURN  
+               00417 
+               00418 ; ; Starting pCode block
+               00419 S_ds3231__from_bcd      code
+0000           00420 _from_bcd:
+               00421 ;       .line   34; ds3231.c    uint8_t from_bcd(uint8_t d){
+0000 CFD9 FFE5 00422         MOVFF   FSR2L, POSTDEC1
+0004 CFE1 FFD9 00423         MOVFF   FSR1L, FSR2L
+0008 C000 FFE5 00424         MOVFF   r0x00, POSTDEC1
+000C C000 FFE5 00425         MOVFF   r0x01, POSTDEC1
+0010 0E02      00426         MOVLW   0x02
+0012 CFDB F000 00427         MOVFF   PLUSW2, r0x00
+               00428 ;       .line   35; ds3231.c    return (d & b(00001111)) + (((d & b(11110000)) >> 4) * 10);
+0016 0E0F      00429         MOVLW   0x0f
+0018 1400      00430         ANDWF   r0x00, W
+001A 6E00      00431         MOVWF   r0x01
+001C 0EF0      00432         MOVLW   0xf0
+gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+001E 1600      00433         ANDWF   r0x00, F
+0020 3800      00434         SWAPF   r0x00, W
+0022 0B0F      00435         ANDLW   0x0f
+               00436 ; ;multiply lit val:0x0a by variable r0x00 and store in r0x00
+               00437 ; ;Unrolled 8 X 8 multiplication
+               00438 ; ;FIXME: the function does not support result==WREG
+0024 0D0A      00439         MULLW   0x0a
+0026 CFF3 F000 00440         MOVFF   PRODL, r0x00
+002A 5000      00441         MOVF    r0x00, W
+002C 2600      00442         ADDWF   r0x01, F
+002E 5000      00443         MOVF    r0x01, W
+0030 CFE4 F000 00444         MOVFF   PREINC1, r0x01
+0034 CFE4 F000 00445         MOVFF   PREINC1, r0x00
+0038 CFE4 FFD9 00446         MOVFF   PREINC1, FSR2L
+003C 0012      00447         RETURN  
+               00448 
+               00449 ; ; Starting pCode block
+               00450 S_ds3231__init_ds3231   code
+0000           00451 _init_ds3231:
+               00452 ;       .line   31; ds3231.c    init_i2c();
+0000 EC00 F000 00453         CALL    _init_i2c
+0004 0012      00454         RETURN  
+               00455 
+               00456 
+               00457 
+               00458 ; Statistics:
+               00459 ; code size:      552 (0x0228) bytes ( 0.42%)
+               00460 ;                 276 (0x0114) words
+               00461 ; udata size:       3 (0x0003) bytes ( 4.69%)
+               00462 ; access size:      3 (0x0003) bytes
+               00463 
+               00464 
+gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE 10
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FSR1L                             00000FE1
+FSR2L                             00000FD9
+PLUSW2                            00000FDB
+POSTDEC1                          00000FE5
+PREINC1                           00000FE4
+PRODL                             00000FF3
+STATUS                            00000FD8
+WREG                              00000FE8
+_00122_DS_                        00000082
+_00125_DS_                        000000BE
+_ADCON0                           00000000
+_ADCON0bits                       00000000
+_ADCON1                           00000000
+_ADCON1bits                       00000000
+_ADCON2                           00000000
+_ADCON2bits                       00000000
+_ADRESH                           00000000
+_ADRESL                           00000000
+_BAUDCTL                          00000000
+_BSR                              00000000
+_CCP1CON                          00000000
+_CCP1CONbits                      00000000
+_CCPR1H                           00000000
+_CCPR1L                           00000000
+_ECCPAS                           00000000
+_ECCPASbits                       00000000
+_EEADR                            00000000
+_EECON1                           00000000
+_EECON1bits                       00000000
+_EECON2                           00000000
+_EEDATA                           00000000
+_FSR0H                            00000000
+_FSR0L                            00000000
+_FSR1H                            00000000
+_FSR1L                            00000000
+_FSR2H                            00000000
+_FSR2L                            00000000
+_INDF0                            00000000
+_INDF1                            00000000
+_INDF2                            00000000
+_INTCON                           00000000
+_INTCON2                          00000000
+_INTCON2bits                      00000000
+_INTCON3                          00000000
+_INTCON3bits                      00000000
+_INTCONbits                       00000000
+_IPR1                             00000000
+_IPR1bits                         00000000
+_IPR2                             00000000
+_IPR2bits                         00000000
+_LATA                             00000000
+_LATAbits                         00000000
+_LATB                             00000000
+gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_LATBbits                         00000000
+_LVDCON                           00000000
+_LVDCONbits                       00000000
+_OSCCON                           00000000
+_OSCCONbits                       00000000
+_PCL                              00000000
+_PCLATH                           00000000
+_PCLATU                           00000000
+_PIE1                             00000000
+_PIE1bits                         00000000
+_PIE2                             00000000
+_PIE2bits                         00000000
+_PIR1                             00000000
+_PIR1bits                         00000000
+_PIR2                             00000000
+_PIR2bits                         00000000
+_PLUSW0                           00000000
+_PLUSW1                           00000000
+_PLUSW2                           00000000
+_PORTA                            00000000
+_PORTAbits                        00000000
+_PORTB                            00000000
+_PORTBbits                        00000000
+_POSTDEC0                         00000000
+_POSTDEC1                         00000000
+_POSTDEC2                         00000000
+_POSTINC0                         00000000
+_POSTINC1                         00000000
+_POSTINC2                         00000000
+_PR2                              00000000
+_PREINC0                          00000000
+_PREINC1                          00000000
+_PREINC2                          00000000
+_PRODH                            00000000
+_PRODL                            00000000
+_RCON                             00000000
+_RCONbits                         00000000
+_RCREG                            00000000
+_RCSTA                            00000000
+_RCSTAbits                        00000000
+_SPBRG                            00000000
+_SPBRGH                           00000000
+_STATUS                           00000000
+_STATUSbits                       00000000
+_STKPTR                           00000000
+_STKPTRbits                       00000000
+_T0CON                            00000000
+_T1CON                            00000000
+_T1CONbits                        00000000
+_T2CON                            00000000
+_T2CONbits                        00000000
+_T3CON                            00000000
+_T3CONbits                        00000000
+_TABLAT                           00000000
+gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_TBLPTRH                          00000000
+_TBLPTRL                          00000000
+_TBLPTRU                          00000000
+_TMR0H                            00000000
+_TMR0L                            00000000
+_TMR1H                            00000000
+_TMR1L                            00000000
+_TMR2                             00000000
+_TMR3H                            00000000
+_TMR3L                            00000000
+_TOSH                             00000000
+_TOSL                             00000000
+_TOSU                             00000000
+_TRISA                            00000000
+_TRISAbits                        00000000
+_TRISB                            00000000
+_TRISBbits                        00000000
+_TXREG                            00000000
+_TXSTA                            00000000
+_TXSTAbits                        00000000
+_WDTCON                           00000000
+_WDTCONbits                       00000000
+_WREG                             00000000
+__18F1320                         00000001
+__divuchar                        00000000
+__moduchar                        00000000
+_ds3231_time                      00000000
+_eeprom_data                      00000000
+_from_bcd                         00000000
+_i2c_read                         00000000
+_i2c_reset                        00000000
+_i2c_start                        00000000
+_i2c_stop                         00000000
+_i2c_write                        00000000
+_init_ds3231                      00000000
+_init_i2c                         00000000
+_read_from_ds3231                 00000000
+_read_time_from_ds3231            00000000
+_to_bcd                           00000000
+_trigger_save_eeprom              00000000
+_write_time_to_ds3231             00000000
+r0x00                             00000000
+r0x01                             00000001
+r0x02                             00000002
+
+
+Errors   :       0
+Warnings :       0 reported,       0 suppressed
+Messages :       0 reported,       0 suppressed
+

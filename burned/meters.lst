@@ -1,0 +1,477 @@
+gpasm-0.13.4 beta               meters.asm  7-10-2008  00:58:19          PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00001 ;--------------------------------------------------------
+               00002 ; File Created by SDCC : FreeWare ANSI-C Compiler
+               00003 ; Version 2.6.0 #4309 (Sep 23 2007)
+               00004 ; This file generated Thu Jul 10 00:58:19 2008
+               00005 ;--------------------------------------------------------
+               00006 ; PIC16 port for the Microchip 16-bit core micros
+               00007 ;--------------------------------------------------------
+               00008         list    p=18f1320
+               00009 
+               00010         radix dec
+               00011 
+               00012 ;--------------------------------------------------------
+               00013 ; public variables in this module
+               00014 ;--------------------------------------------------------
+               00015         global _init_meters
+               00016         global _do_meters
+               00017         global _hours_meter
+               00018         global _mins_meter
+               00019         global _secs_meter
+               00020         global _hours_meter_pwm
+               00021         global _mins_meter_pwm
+               00022         global _secs_meter_pwm
+               00023 
+               00024 ;--------------------------------------------------------
+               00025 ; extern variables in this module
+               00026 ;--------------------------------------------------------
+               00027         extern _PORTAbits
+               00028         extern _PORTBbits
+               00029         extern _LATAbits
+               00030         extern _LATBbits
+               00031         extern _TRISAbits
+               00032         extern _TRISBbits
+               00033         extern _PIE1bits
+               00034         extern _PIR1bits
+               00035         extern _IPR1bits
+               00036         extern _PIE2bits
+               00037         extern _PIR2bits
+               00038         extern _IPR2bits
+               00039         extern _EECON1bits
+               00040         extern _RCSTAbits
+               00041         extern _TXSTAbits
+               00042         extern _T3CONbits
+               00043         extern _ECCPASbits
+               00044         extern _CCP1CONbits
+               00045         extern _ADCON2bits
+               00046         extern _ADCON1bits
+               00047         extern _ADCON0bits
+               00048         extern _T2CONbits
+               00049         extern _T1CONbits
+               00050         extern _RCONbits
+               00051         extern _WDTCONbits
+               00052         extern _LVDCONbits
+               00053         extern _OSCCONbits
+               00054         extern _STATUSbits
+gpasm-0.13.4 beta               meters.asm  7-10-2008  00:58:19          PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00055         extern _INTCON3bits
+               00056         extern _INTCON2bits
+               00057         extern _INTCONbits
+               00058         extern _STKPTRbits
+               00059         extern _PORTA
+               00060         extern _PORTB
+               00061         extern _LATA
+               00062         extern _LATB
+               00063         extern _TRISA
+               00064         extern _TRISB
+               00065         extern _PIE1
+               00066         extern _PIR1
+               00067         extern _IPR1
+               00068         extern _PIE2
+               00069         extern _PIR2
+               00070         extern _IPR2
+               00071         extern _EECON1
+               00072         extern _EECON2
+               00073         extern _EEDATA
+               00074         extern _EEADR
+               00075         extern _BAUDCTL
+               00076         extern _RCSTA
+               00077         extern _TXSTA
+               00078         extern _TXREG
+               00079         extern _RCREG
+               00080         extern _SPBRG
+               00081         extern _SPBRGH
+               00082         extern _T3CON
+               00083         extern _TMR3L
+               00084         extern _TMR3H
+               00085         extern _ECCPAS
+               00086         extern _CCP1CON
+               00087         extern _CCPR1L
+               00088         extern _CCPR1H
+               00089         extern _ADCON2
+               00090         extern _ADCON1
+               00091         extern _ADCON0
+               00092         extern _ADRESL
+               00093         extern _ADRESH
+               00094         extern _T2CON
+               00095         extern _PR2
+               00096         extern _TMR2
+               00097         extern _T1CON
+               00098         extern _TMR1L
+               00099         extern _TMR1H
+               00100         extern _RCON
+               00101         extern _WDTCON
+               00102         extern _LVDCON
+               00103         extern _OSCCON
+               00104         extern _T0CON
+               00105         extern _TMR0L
+               00106         extern _TMR0H
+               00107         extern _STATUS
+               00108         extern _FSR2L
+gpasm-0.13.4 beta               meters.asm  7-10-2008  00:58:19          PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00109         extern _FSR2H
+               00110         extern _PLUSW2
+               00111         extern _PREINC2
+               00112         extern _POSTDEC2
+               00113         extern _POSTINC2
+               00114         extern _INDF2
+               00115         extern _BSR
+               00116         extern _FSR1L
+               00117         extern _FSR1H
+               00118         extern _PLUSW1
+               00119         extern _PREINC1
+               00120         extern _POSTDEC1
+               00121         extern _POSTINC1
+               00122         extern _INDF1
+               00123         extern _WREG
+               00124         extern _FSR0L
+               00125         extern _FSR0H
+               00126         extern _PLUSW0
+               00127         extern _PREINC0
+               00128         extern _POSTDEC0
+               00129         extern _POSTINC0
+               00130         extern _INDF0
+               00131         extern _INTCON3
+               00132         extern _INTCON2
+               00133         extern _INTCON
+               00134         extern _PRODL
+               00135         extern _PRODH
+               00136         extern _TABLAT
+               00137         extern _TBLPTRL
+               00138         extern _TBLPTRH
+               00139         extern _TBLPTRU
+               00140         extern _PCL
+               00141         extern _PCLATH
+               00142         extern _PCLATU
+               00143         extern _STKPTR
+               00144         extern _TOSL
+               00145         extern _TOSH
+               00146         extern _TOSU
+               00147 ;--------------------------------------------------------
+               00148 ;       Equates to used internal registers
+               00149 ;--------------------------------------------------------
+  00000FD8     00150 STATUS  equ     0xfd8
+  00000FE1     00151 FSR1L   equ     0xfe1
+  00000FD9     00152 FSR2L   equ     0xfd9
+  00000FE5     00153 POSTDEC1        equ     0xfe5
+  00000FE4     00154 PREINC1 equ     0xfe4
+               00155 
+               00156 udata_meters_0  udata
+               00157 _hours_meter_pwm        res     1
+               00158 
+               00159 udata_meters_1  udata
+               00160 _mins_meter_pwm res     1
+               00161 
+               00162 udata_meters_2  udata
+gpasm-0.13.4 beta               meters.asm  7-10-2008  00:58:19          PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00163 _secs_meter_pwm res     1
+               00164 
+               00165 udata_meters_3  udata
+               00166 _hours_meter    res     1
+               00167 
+               00168 udata_meters_4  udata
+               00169 _mins_meter     res     1
+               00170 
+               00171 udata_meters_5  udata
+               00172 _secs_meter     res     1
+               00173 
+               00174 ;--------------------------------------------------------
+               00175 ; global & static initialisations
+               00176 ;--------------------------------------------------------
+               00177 ; I code from now on!
+               00178 ; ; Starting pCode block
+               00179 S_meters__do_meters     code
+0000           00180 _do_meters:
+0000 0000      00181         BANKSEL _hours_meter_pwm
+               00182 ;       .line   35; meters.c    hours_meter_pwm--;
+0002 0700      00183         DECF    _hours_meter_pwm, F, B
+               00184 ;       .line   36; meters.c    if (!hours_meter_pwm)
+0004 5100      00185         MOVF    _hours_meter_pwm, W, B
+0006 E100      00186         BNZ     _00110_DS_
+               00187 ;       .line   37; meters.c    hours_meter_pwm = meter_range;
+0008 0EF0      00188         MOVLW   0xf0
+               00189 ; removed redundant BANKSEL
+000A 6F00      00190         MOVWF   _hours_meter_pwm, B
+000C           00191 _00110_DS_:
+000C 0000      00192         BANKSEL _mins_meter_pwm
+               00193 ;       .line   38; meters.c    mins_meter_pwm--;
+000E 0700      00194         DECF    _mins_meter_pwm, F, B
+               00195 ;       .line   39; meters.c    if (!mins_meter_pwm)
+0010 5100      00196         MOVF    _mins_meter_pwm, W, B
+0012 E100      00197         BNZ     _00112_DS_
+               00198 ;       .line   40; meters.c    mins_meter_pwm = meter_range;
+0014 0EF0      00199         MOVLW   0xf0
+               00200 ; removed redundant BANKSEL
+0016 6F00      00201         MOVWF   _mins_meter_pwm, B
+0018           00202 _00112_DS_:
+0018 0000      00203         BANKSEL _secs_meter_pwm
+               00204 ;       .line   41; meters.c    secs_meter_pwm--;
+001A 0700      00205         DECF    _secs_meter_pwm, F, B
+               00206 ;       .line   42; meters.c    if (!secs_meter_pwm)
+001C 5100      00207         MOVF    _secs_meter_pwm, W, B
+001E E100      00208         BNZ     _00114_DS_
+               00209 ;       .line   43; meters.c    secs_meter_pwm = meter_range;
+0020 0EF0      00210         MOVLW   0xf0
+               00211 ; removed redundant BANKSEL
+0022 6F00      00212         MOVWF   _secs_meter_pwm, B
+0024           00213 _00114_DS_:
+0024 0000      00214         BANKSEL _hours_meter
+               00215 ;       .line   66; meters.c    if (hours_meter > hours_meter_pwm){
+0026 5100      00216         MOVF    _hours_meter, W, B
+gpasm-0.13.4 beta               meters.asm  7-10-2008  00:58:19          PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0028 0000      00217         BANKSEL _hours_meter_pwm
+002A 5D00      00218         SUBWF   _hours_meter_pwm, W, B
+002C E200      00219         BC      _00116_DS_
+               00220 ;       .line   67; meters.c    LATBbits.LATB4 = 0;
+002E 9800      00221         BCF     _LATBbits, 4
+0030 D000      00222         BRA     _00117_DS_
+0032           00223 _00116_DS_:
+               00224 ;       .line   69; meters.c    LATBbits.LATB4 = 1;
+0032 8800      00225         BSF     _LATBbits, 4
+0034           00226 _00117_DS_:
+0034 0000      00227         BANKSEL _mins_meter
+               00228 ;       .line   71; meters.c    if (mins_meter > mins_meter_pwm){
+0036 5100      00229         MOVF    _mins_meter, W, B
+0038 0000      00230         BANKSEL _mins_meter_pwm
+003A 5D00      00231         SUBWF   _mins_meter_pwm, W, B
+003C E200      00232         BC      _00119_DS_
+               00233 ;       .line   72; meters.c    LATBbits.LATB1 = 0;
+003E 9200      00234         BCF     _LATBbits, 1
+0040 D000      00235         BRA     _00120_DS_
+0042           00236 _00119_DS_:
+               00237 ;       .line   74; meters.c    LATBbits.LATB1 = 1;
+0042 8200      00238         BSF     _LATBbits, 1
+0044           00239 _00120_DS_:
+0044 0000      00240         BANKSEL _secs_meter
+               00241 ;       .line   76; meters.c    if (secs_meter > secs_meter_pwm){
+0046 5100      00242         MOVF    _secs_meter, W, B
+0048 0000      00243         BANKSEL _secs_meter_pwm
+004A 5D00      00244         SUBWF   _secs_meter_pwm, W, B
+004C E200      00245         BC      _00122_DS_
+               00246 ;       .line   77; meters.c    LATBbits.LATB0 = 0;
+004E 9000      00247         BCF     _LATBbits, 0
+0050 D000      00248         BRA     _00124_DS_
+0052           00249 _00122_DS_:
+               00250 ;       .line   79; meters.c    LATBbits.LATB0 = 1;
+0052 8000      00251         BSF     _LATBbits, 0
+0054           00252 _00124_DS_:
+0054 0012      00253         RETURN  
+               00254 
+               00255 ; ; Starting pCode block
+               00256 S_meters__init_meters   code
+0000           00257 _init_meters:
+               00258 ;       .line   26; meters.c    TRISBbits.TRISB0 = 0;
+0000 9000      00259         BCF     _TRISBbits, 0
+               00260 ;       .line   27; meters.c    TRISBbits.TRISB1 = 0;
+0002 9200      00261         BCF     _TRISBbits, 1
+               00262 ;       .line   28; meters.c    TRISBbits.TRISB4 = 0;
+0004 9800      00263         BCF     _TRISBbits, 4
+0006 0012      00264         RETURN  
+               00265 
+               00266 
+               00267 
+               00268 ; Statistics:
+               00269 ; code size:       94 (0x005e) bytes ( 0.07%)
+               00270 ;                  47 (0x002f) words
+gpasm-0.13.4 beta               meters.asm  7-10-2008  00:58:19          PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00271 ; udata size:       6 (0x0006) bytes ( 9.38%)
+               00272 ; access size:      0 (0x0000) bytes
+               00273 
+               00274 
+gpasm-0.13.4 beta               meters.asm  7-10-2008  00:58:19          PAGE  7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FSR1L                             00000FE1
+FSR2L                             00000FD9
+POSTDEC1                          00000FE5
+PREINC1                           00000FE4
+STATUS                            00000FD8
+_00110_DS_                        0000000C
+_00112_DS_                        00000018
+_00114_DS_                        00000024
+_00116_DS_                        00000032
+_00117_DS_                        00000034
+_00119_DS_                        00000042
+_00120_DS_                        00000044
+_00122_DS_                        00000052
+_00124_DS_                        00000054
+_ADCON0                           00000000
+_ADCON0bits                       00000000
+_ADCON1                           00000000
+_ADCON1bits                       00000000
+_ADCON2                           00000000
+_ADCON2bits                       00000000
+_ADRESH                           00000000
+_ADRESL                           00000000
+_BAUDCTL                          00000000
+_BSR                              00000000
+_CCP1CON                          00000000
+_CCP1CONbits                      00000000
+_CCPR1H                           00000000
+_CCPR1L                           00000000
+_ECCPAS                           00000000
+_ECCPASbits                       00000000
+_EEADR                            00000000
+_EECON1                           00000000
+_EECON1bits                       00000000
+_EECON2                           00000000
+_EEDATA                           00000000
+_FSR0H                            00000000
+_FSR0L                            00000000
+_FSR1H                            00000000
+_FSR1L                            00000000
+_FSR2H                            00000000
+_FSR2L                            00000000
+_INDF0                            00000000
+_INDF1                            00000000
+_INDF2                            00000000
+_INTCON                           00000000
+_INTCON2                          00000000
+_INTCON2bits                      00000000
+_INTCON3                          00000000
+_INTCON3bits                      00000000
+_INTCONbits                       00000000
+_IPR1                             00000000
+_IPR1bits                         00000000
+_IPR2                             00000000
+gpasm-0.13.4 beta               meters.asm  7-10-2008  00:58:19          PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_IPR2bits                         00000000
+_LATA                             00000000
+_LATAbits                         00000000
+_LATB                             00000000
+_LATBbits                         00000000
+_LVDCON                           00000000
+_LVDCONbits                       00000000
+_OSCCON                           00000000
+_OSCCONbits                       00000000
+_PCL                              00000000
+_PCLATH                           00000000
+_PCLATU                           00000000
+_PIE1                             00000000
+_PIE1bits                         00000000
+_PIE2                             00000000
+_PIE2bits                         00000000
+_PIR1                             00000000
+_PIR1bits                         00000000
+_PIR2                             00000000
+_PIR2bits                         00000000
+_PLUSW0                           00000000
+_PLUSW1                           00000000
+_PLUSW2                           00000000
+_PORTA                            00000000
+_PORTAbits                        00000000
+_PORTB                            00000000
+_PORTBbits                        00000000
+_POSTDEC0                         00000000
+_POSTDEC1                         00000000
+_POSTDEC2                         00000000
+_POSTINC0                         00000000
+_POSTINC1                         00000000
+_POSTINC2                         00000000
+_PR2                              00000000
+_PREINC0                          00000000
+_PREINC1                          00000000
+_PREINC2                          00000000
+_PRODH                            00000000
+_PRODL                            00000000
+_RCON                             00000000
+_RCONbits                         00000000
+_RCREG                            00000000
+_RCSTA                            00000000
+_RCSTAbits                        00000000
+_SPBRG                            00000000
+_SPBRGH                           00000000
+_STATUS                           00000000
+_STATUSbits                       00000000
+_STKPTR                           00000000
+_STKPTRbits                       00000000
+_T0CON                            00000000
+_T1CON                            00000000
+_T1CONbits                        00000000
+_T2CON                            00000000
+gpasm-0.13.4 beta               meters.asm  7-10-2008  00:58:19          PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_T2CONbits                        00000000
+_T3CON                            00000000
+_T3CONbits                        00000000
+_TABLAT                           00000000
+_TBLPTRH                          00000000
+_TBLPTRL                          00000000
+_TBLPTRU                          00000000
+_TMR0H                            00000000
+_TMR0L                            00000000
+_TMR1H                            00000000
+_TMR1L                            00000000
+_TMR2                             00000000
+_TMR3H                            00000000
+_TMR3L                            00000000
+_TOSH                             00000000
+_TOSL                             00000000
+_TOSU                             00000000
+_TRISA                            00000000
+_TRISAbits                        00000000
+_TRISB                            00000000
+_TRISBbits                        00000000
+_TXREG                            00000000
+_TXSTA                            00000000
+_TXSTAbits                        00000000
+_WDTCON                           00000000
+_WDTCONbits                       00000000
+_WREG                             00000000
+__18F1320                         00000001
+_do_meters                        00000000
+_hours_meter                      00000000
+_hours_meter_pwm                  00000000
+_init_meters                      00000000
+_mins_meter                       00000000
+_mins_meter_pwm                   00000000
+_secs_meter                       00000000
+_secs_meter_pwm                   00000000
+
+
+Errors   :       0
+Warnings :       0 reported,       0 suppressed
+Messages :       0 reported,       0 suppressed
+

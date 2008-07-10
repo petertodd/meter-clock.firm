@@ -1,0 +1,887 @@
+gpasm-0.13.4 beta               time.asm    7-10-2008  00:58:19          PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00001 ;--------------------------------------------------------
+               00002 ; File Created by SDCC : FreeWare ANSI-C Compiler
+               00003 ; Version 2.6.0 #4309 (Sep 23 2007)
+               00004 ; This file generated Thu Jul 10 00:58:19 2008
+               00005 ;--------------------------------------------------------
+               00006 ; PIC16 port for the Microchip 16-bit core micros
+               00007 ;--------------------------------------------------------
+               00008         list    p=18f1320
+               00009 
+               00010         radix dec
+               00011 
+               00012 ;--------------------------------------------------------
+               00013 ; public variables in this module
+               00014 ;--------------------------------------------------------
+               00015         global _init_time
+               00016         global _do_time_int
+               00017         global _inc_mins
+               00018         global _inc_hours
+               00019         global _clear_secs
+               00020         global _save_time_to_rtc
+               00021         global _load_time_from_rtc
+               00022         global _ratio_count_mins
+               00023         global _ratio_count_secs
+               00024         global _ratio_count_tics
+               00025         global _osctune_shadow
+               00026         global _OSCTUNE
+               00027 
+               00028 ;--------------------------------------------------------
+               00029 ; extern variables in this module
+               00030 ;--------------------------------------------------------
+               00031         extern _PORTAbits
+               00032         extern _PORTBbits
+               00033         extern _LATAbits
+               00034         extern _LATBbits
+               00035         extern _TRISAbits
+               00036         extern _TRISBbits
+               00037         extern _PIE1bits
+               00038         extern _PIR1bits
+               00039         extern _IPR1bits
+               00040         extern _PIE2bits
+               00041         extern _PIR2bits
+               00042         extern _IPR2bits
+               00043         extern _EECON1bits
+               00044         extern _RCSTAbits
+               00045         extern _TXSTAbits
+               00046         extern _T3CONbits
+               00047         extern _ECCPASbits
+               00048         extern _CCP1CONbits
+               00049         extern _ADCON2bits
+               00050         extern _ADCON1bits
+               00051         extern _ADCON0bits
+               00052         extern _T2CONbits
+               00053         extern _T1CONbits
+               00054         extern _RCONbits
+gpasm-0.13.4 beta               time.asm    7-10-2008  00:58:19          PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00055         extern _WDTCONbits
+               00056         extern _LVDCONbits
+               00057         extern _OSCCONbits
+               00058         extern _STATUSbits
+               00059         extern _INTCON3bits
+               00060         extern _INTCON2bits
+               00061         extern _INTCONbits
+               00062         extern _STKPTRbits
+               00063         extern _eeprom_data
+               00064         extern _hours_meter
+               00065         extern _mins_meter
+               00066         extern _secs_meter
+               00067         extern _ds3231_time
+               00068         extern _PORTA
+               00069         extern _PORTB
+               00070         extern _LATA
+               00071         extern _LATB
+               00072         extern _TRISA
+               00073         extern _TRISB
+               00074         extern _PIE1
+               00075         extern _PIR1
+               00076         extern _IPR1
+               00077         extern _PIE2
+               00078         extern _PIR2
+               00079         extern _IPR2
+               00080         extern _EECON1
+               00081         extern _EECON2
+               00082         extern _EEDATA
+               00083         extern _EEADR
+               00084         extern _BAUDCTL
+               00085         extern _RCSTA
+               00086         extern _TXSTA
+               00087         extern _TXREG
+               00088         extern _RCREG
+               00089         extern _SPBRG
+               00090         extern _SPBRGH
+               00091         extern _T3CON
+               00092         extern _TMR3L
+               00093         extern _TMR3H
+               00094         extern _ECCPAS
+               00095         extern _CCP1CON
+               00096         extern _CCPR1L
+               00097         extern _CCPR1H
+               00098         extern _ADCON2
+               00099         extern _ADCON1
+               00100         extern _ADCON0
+               00101         extern _ADRESL
+               00102         extern _ADRESH
+               00103         extern _T2CON
+               00104         extern _PR2
+               00105         extern _TMR2
+               00106         extern _T1CON
+               00107         extern _TMR1L
+               00108         extern _TMR1H
+gpasm-0.13.4 beta               time.asm    7-10-2008  00:58:19          PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00109         extern _RCON
+               00110         extern _WDTCON
+               00111         extern _LVDCON
+               00112         extern _OSCCON
+               00113         extern _T0CON
+               00114         extern _TMR0L
+               00115         extern _TMR0H
+               00116         extern _STATUS
+               00117         extern _FSR2L
+               00118         extern _FSR2H
+               00119         extern _PLUSW2
+               00120         extern _PREINC2
+               00121         extern _POSTDEC2
+               00122         extern _POSTINC2
+               00123         extern _INDF2
+               00124         extern _BSR
+               00125         extern _FSR1L
+               00126         extern _FSR1H
+               00127         extern _PLUSW1
+               00128         extern _PREINC1
+               00129         extern _POSTDEC1
+               00130         extern _POSTINC1
+               00131         extern _INDF1
+               00132         extern _WREG
+               00133         extern _FSR0L
+               00134         extern _FSR0H
+               00135         extern _PLUSW0
+               00136         extern _PREINC0
+               00137         extern _POSTDEC0
+               00138         extern _POSTINC0
+               00139         extern _INDF0
+               00140         extern _INTCON3
+               00141         extern _INTCON2
+               00142         extern _INTCON
+               00143         extern _PRODL
+               00144         extern _PRODH
+               00145         extern _TABLAT
+               00146         extern _TBLPTRL
+               00147         extern _TBLPTRH
+               00148         extern _TBLPTRU
+               00149         extern _PCL
+               00150         extern _PCLATH
+               00151         extern _PCLATU
+               00152         extern _STKPTR
+               00153         extern _TOSL
+               00154         extern _TOSH
+               00155         extern _TOSU
+               00156         extern _trigger_save_eeprom
+               00157         extern _init_ds3231
+               00158         extern _read_time_from_ds3231
+               00159         extern _write_time_to_ds3231
+               00160         extern __divsint
+               00161         extern __modsint
+               00162 ;--------------------------------------------------------
+gpasm-0.13.4 beta               time.asm    7-10-2008  00:58:19          PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+               00163 ;       Equates to used internal registers
+               00164 ;--------------------------------------------------------
+  00000FD8     00165 STATUS  equ     0xfd8
+  00000FE1     00166 FSR1L   equ     0xfe1
+  00000FD9     00167 FSR2L   equ     0xfd9
+  00000FE5     00168 POSTDEC1        equ     0xfe5
+  00000FE4     00169 PREINC1 equ     0xfe4
+  00000FF3     00170 PRODL   equ     0xff3
+               00171 
+               00172 
+               00173         idata
+               00174 _ratio_count_mins       db      0x18
+               00175 _ratio_count_secs       db      0x3c
+               00176 _ratio_count_tics       db      0x08
+               00177 _osctune_shadow db      0x00
+               00178 
+               00179 
+               00180 ; Internal registers
+               00181 .registers      udata_ovr       0x0000
+               00182 r0x00   res     1
+               00183 r0x01   res     1
+               00184 r0x02   res     1
+               00185 r0x03   res     1
+               00186 r0x04   res     1
+               00187 r0x05   res     1
+               00188 
+               00189 
+               00190 ustat_time_00   udata   0X0F9B
+               00191 _OSCTUNE        res     1
+               00192 
+               00193 ;--------------------------------------------------------
+               00194 ; global & static initialisations
+               00195 ;--------------------------------------------------------
+               00196 ; I code from now on!
+               00197 ; ; Starting pCode block
+               00198 S_time__load_time_from_rtc      code
+0000           00199 _load_time_from_rtc:
+               00200 ;       .line   163; time.c     void load_time_from_rtc(){
+0000 C000 FFE5 00201         MOVFF   r0x00, POSTDEC1
+0004 C000 FFE5 00202         MOVFF   r0x01, POSTDEC1
+0008 C000 FFE5 00203         MOVFF   r0x02, POSTDEC1
+000C C000 FFE5 00204         MOVFF   r0x03, POSTDEC1
+0010 C000 FFE5 00205         MOVFF   r0x04, POSTDEC1
+0014 C000 FFE5 00206         MOVFF   r0x05, POSTDEC1
+               00207 ;       .line   164; time.c     read_time_from_ds3231();
+0018 EC00 F000 00208         CALL    _read_time_from_ds3231
+               00209 ; ;multiply lit val:0x04 by variable _ds3231_time and store in r0x00
+               00210 ; ;Unrolled 8 X 8 multiplication
+               00211 ; ;FIXME: the function does not support result==WREG
+001C 0000      00212         BANKSEL _ds3231_time
+               00213 ;       .line   166; time.c     secs_meter = meter_range - (ds3231_time.secs * 4);
+001E 5100      00214         MOVF    _ds3231_time, W, B
+0020 0D04      00215         MULLW   0x04
+0022 CFF3 F000 00216         MOVFF   PRODL, r0x00
+gpasm-0.13.4 beta               time.asm    7-10-2008  00:58:19          PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0026 5000      00217         MOVF    r0x00, W
+0028 08F0      00218         SUBLW   0xf0
+002A 0000      00219         BANKSEL _secs_meter
+002C 6F00      00220         MOVWF   _secs_meter, B
+               00221 ; ;multiply lit val:0x04 by variable (_ds3231_time + 1) and store in r0x00
+               00222 ; ;Unrolled 8 X 8 multiplication
+               00223 ; ;FIXME: the function does not support result==WREG
+002E 0000      00224         BANKSEL (_ds3231_time + 1)
+               00225 ;       .line   167; time.c     mins_meter = meter_range - (ds3231_time.mins * 4);
+0030 5100      00226         MOVF    (_ds3231_time + 1), W, B
+0032 0D04      00227         MULLW   0x04
+0034 CFF3 F000 00228         MOVFF   PRODL, r0x00
+0038 5000      00229         MOVF    r0x00, W
+003A 08F0      00230         SUBLW   0xf0
+003C 0000      00231         BANKSEL _mins_meter
+003E 6F00      00232         MOVWF   _mins_meter, B
+               00233 ; ;multiply lit val:0x0a by variable (_ds3231_time + 2) and store in r0x00
+               00234 ; ;Unrolled 8 X 8 multiplication
+               00235 ; ;FIXME: the function does not support result==WREG
+0040 0000      00236         BANKSEL (_ds3231_time + 2)
+               00237 ;       .line   168; time.c     hours_meter = meter_range - (ds3231_time.hours * 10);
+0042 5100      00238         MOVF    (_ds3231_time + 2), W, B
+0044 0D0A      00239         MULLW   0x0a
+0046 CFF3 F000 00240         MOVFF   PRODL, r0x00
+004A 5000      00241         MOVF    r0x00, W
+004C 08F0      00242         SUBLW   0xf0
+004E 0000      00243         BANKSEL _hours_meter
+0050 6F00      00244         MOVWF   _hours_meter, B
+               00245 ;       .line   172; time.c     mins_meter -= (meter_range - secs_meter) / num_time_mins;
+0052 C000 F000 00246         MOVFF   _secs_meter, r0x00
+0056 6A00      00247         CLRF    r0x01
+0058 5000      00248         MOVF    r0x00, W
+005A 08F0      00249         SUBLW   0xf0
+005C 6E00      00250         MOVWF   r0x00
+005E 0E00      00251         MOVLW   0x00
+0060 5600      00252         SUBFWB  r0x01, F
+0062 6AE5      00253         CLRF    POSTDEC1
+0064 0E3C      00254         MOVLW   0x3c
+0066 6EE5      00255         MOVWF   POSTDEC1
+0068 5000      00256         MOVF    r0x01, W
+006A 6EE5      00257         MOVWF   POSTDEC1
+006C 5000      00258         MOVF    r0x00, W
+006E 6EE5      00259         MOVWF   POSTDEC1
+0070 EC00 F000 00260         CALL    __divsint
+0074 6E00      00261         MOVWF   r0x02
+0076 0E04      00262         MOVLW   0x04
+0078 26E1      00263         ADDWF   FSR1L, F
+007A C000 F000 00264         MOVFF   _mins_meter, r0x03
+007E 5000      00265         MOVF    r0x02, W
+0080 5C00      00266         SUBWF   r0x03, W
+0082 0000      00267         BANKSEL _mins_meter
+0084 6F00      00268         MOVWF   _mins_meter, B
+               00269 ;       .line   173; time.c     hours_meter -= (meter_range - mins_meter) / num_time_hours;
+0086 C000 F000 00270         MOVFF   _mins_meter, r0x02
+gpasm-0.13.4 beta               time.asm    7-10-2008  00:58:19          PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+008A 6A00      00271         CLRF    r0x03
+008C 5000      00272         MOVF    r0x02, W
+008E 08F0      00273         SUBLW   0xf0
+0090 6E00      00274         MOVWF   r0x02
+0092 0E00      00275         MOVLW   0x00
+0094 5600      00276         SUBFWB  r0x03, F
+0096 6AE5      00277         CLRF    POSTDEC1
+0098 0E18      00278         MOVLW   0x18
+009A 6EE5      00279         MOVWF   POSTDEC1
+009C 5000      00280         MOVF    r0x03, W
+009E 6EE5      00281         MOVWF   POSTDEC1
+00A0 5000      00282         MOVF    r0x02, W
+00A2 6EE5      00283         MOVWF   POSTDEC1
+00A4 EC00 F000 00284         CALL    __divsint
+00A8 6E00      00285         MOVWF   r0x04
+00AA 0E04      00286         MOVLW   0x04
+00AC 26E1      00287         ADDWF   FSR1L, F
+00AE C000 F000 00288         MOVFF   _hours_meter, r0x05
+00B2 5000      00289         MOVF    r0x04, W
+00B4 5C00      00290         SUBWF   r0x05, W
+00B6 0000      00291         BANKSEL _hours_meter
+00B8 6F00      00292         MOVWF   _hours_meter, B
+               00293 ;       .line   176; time.c     ratio_count_tics = num_time_tics;
+00BA 0E08      00294         MOVLW   0x08
+00BC 0000      00295         BANKSEL _ratio_count_tics
+00BE 6F00      00296         MOVWF   _ratio_count_tics, B
+               00297 ;       .line   177; time.c     ratio_count_secs = num_time_mins - ((meter_range - secs_meter) % num_time_mins);
+00C0 6AE5      00298         CLRF    POSTDEC1
+00C2 0E3C      00299         MOVLW   0x3c
+00C4 6EE5      00300         MOVWF   POSTDEC1
+00C6 5000      00301         MOVF    r0x01, W
+00C8 6EE5      00302         MOVWF   POSTDEC1
+00CA 5000      00303         MOVF    r0x00, W
+00CC 6EE5      00304         MOVWF   POSTDEC1
+00CE EC00 F000 00305         CALL    __modsint
+00D2 6E00      00306         MOVWF   r0x00
+00D4 0E04      00307         MOVLW   0x04
+00D6 26E1      00308         ADDWF   FSR1L, F
+00D8 5000      00309         MOVF    r0x00, W
+00DA 083C      00310         SUBLW   0x3c
+00DC 0000      00311         BANKSEL _ratio_count_secs
+00DE 6F00      00312         MOVWF   _ratio_count_secs, B
+               00313 ;       .line   178; time.c     ratio_count_mins = num_time_hours - ((meter_range - mins_meter) % num_time_hours);
+00E0 6AE5      00314         CLRF    POSTDEC1
+00E2 0E18      00315         MOVLW   0x18
+00E4 6EE5      00316         MOVWF   POSTDEC1
+00E6 5000      00317         MOVF    r0x03, W
+00E8 6EE5      00318         MOVWF   POSTDEC1
+00EA 5000      00319         MOVF    r0x02, W
+00EC 6EE5      00320         MOVWF   POSTDEC1
+00EE EC00 F000 00321         CALL    __modsint
+00F2 6E00      00322         MOVWF   r0x00
+00F4 0E04      00323         MOVLW   0x04
+00F6 26E1      00324         ADDWF   FSR1L, F
+gpasm-0.13.4 beta               time.asm    7-10-2008  00:58:19          PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+00F8 5000      00325         MOVF    r0x00, W
+00FA 0818      00326         SUBLW   0x18
+00FC 0000      00327         BANKSEL _ratio_count_mins
+00FE 6F00      00328         MOVWF   _ratio_count_mins, B
+0100 CFE4 F000 00329         MOVFF   PREINC1, r0x05
+0104 CFE4 F000 00330         MOVFF   PREINC1, r0x04
+0108 CFE4 F000 00331         MOVFF   PREINC1, r0x03
+010C CFE4 F000 00332         MOVFF   PREINC1, r0x02
+0110 CFE4 F000 00333         MOVFF   PREINC1, r0x01
+0114 CFE4 F000 00334         MOVFF   PREINC1, r0x00
+0118 0012      00335         RETURN  
+               00336 
+               00337 ; ; Starting pCode block
+               00338 S_time__save_time_to_rtc        code
+0000           00339 _save_time_to_rtc:
+               00340 ;       .line   155; time.c     void save_time_to_rtc(){
+0000 C000 FFE5 00341         MOVFF   r0x00, POSTDEC1
+0004 C000 FFE5 00342         MOVFF   r0x01, POSTDEC1
+               00343 ;       .line   156; time.c     ds3231_time.hours = (meter_range - hours_meter) / 10;
+0008 C000 F000 00344         MOVFF   _hours_meter, r0x00
+000C 6A00      00345         CLRF    r0x01
+000E 5000      00346         MOVF    r0x00, W
+0010 08F0      00347         SUBLW   0xf0
+0012 6E00      00348         MOVWF   r0x00
+0014 0E00      00349         MOVLW   0x00
+0016 5600      00350         SUBFWB  r0x01, F
+0018 6AE5      00351         CLRF    POSTDEC1
+001A 0E0A      00352         MOVLW   0x0a
+001C 6EE5      00353         MOVWF   POSTDEC1
+001E 5000      00354         MOVF    r0x01, W
+0020 6EE5      00355         MOVWF   POSTDEC1
+0022 5000      00356         MOVF    r0x00, W
+0024 6EE5      00357         MOVWF   POSTDEC1
+0026 EC00 F000 00358         CALL    __divsint
+002A 6E00      00359         MOVWF   r0x00
+002C 0E04      00360         MOVLW   0x04
+002E 26E1      00361         ADDWF   FSR1L, F
+0030 5000      00362         MOVF    r0x00, W
+0032 0000      00363         BANKSEL (_ds3231_time + 2)
+0034 6F00      00364         MOVWF   (_ds3231_time + 2), B
+               00365 ;       .line   157; time.c     ds3231_time.mins = (meter_range - mins_meter) / 4;
+0036 C000 F000 00366         MOVFF   _mins_meter, r0x00
+003A 6A00      00367         CLRF    r0x01
+003C 5000      00368         MOVF    r0x00, W
+003E 08F0      00369         SUBLW   0xf0
+0040 6E00      00370         MOVWF   r0x00
+0042 0E00      00371         MOVLW   0x00
+0044 5600      00372         SUBFWB  r0x01, F
+0046 6AE5      00373         CLRF    POSTDEC1
+0048 0E04      00374         MOVLW   0x04
+004A 6EE5      00375         MOVWF   POSTDEC1
+004C 5000      00376         MOVF    r0x01, W
+004E 6EE5      00377         MOVWF   POSTDEC1
+0050 5000      00378         MOVF    r0x00, W
+gpasm-0.13.4 beta               time.asm    7-10-2008  00:58:19          PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0052 6EE5      00379         MOVWF   POSTDEC1
+0054 EC00 F000 00380         CALL    __divsint
+0058 6E00      00381         MOVWF   r0x00
+005A 0E04      00382         MOVLW   0x04
+005C 26E1      00383         ADDWF   FSR1L, F
+005E 5000      00384         MOVF    r0x00, W
+0060 0000      00385         BANKSEL (_ds3231_time + 1)
+0062 6F00      00386         MOVWF   (_ds3231_time + 1), B
+               00387 ;       .line   158; time.c     ds3231_time.secs = (meter_range - secs_meter) / 4;
+0064 C000 F000 00388         MOVFF   _secs_meter, r0x00
+0068 6A00      00389         CLRF    r0x01
+006A 5000      00390         MOVF    r0x00, W
+006C 08F0      00391         SUBLW   0xf0
+006E 6E00      00392         MOVWF   r0x00
+0070 0E00      00393         MOVLW   0x00
+0072 5600      00394         SUBFWB  r0x01, F
+0074 6AE5      00395         CLRF    POSTDEC1
+0076 0E04      00396         MOVLW   0x04
+0078 6EE5      00397         MOVWF   POSTDEC1
+007A 5000      00398         MOVF    r0x01, W
+007C 6EE5      00399         MOVWF   POSTDEC1
+007E 5000      00400         MOVF    r0x00, W
+0080 6EE5      00401         MOVWF   POSTDEC1
+0082 EC00 F000 00402         CALL    __divsint
+0086 6E00      00403         MOVWF   r0x00
+0088 0E04      00404         MOVLW   0x04
+008A 26E1      00405         ADDWF   FSR1L, F
+008C 5000      00406         MOVF    r0x00, W
+008E 0000      00407         BANKSEL _ds3231_time
+0090 6F00      00408         MOVWF   _ds3231_time, B
+               00409 ;       .line   160; time.c     write_time_to_ds3231();
+0092 EC00 F000 00410         CALL    _write_time_to_ds3231
+0096 CFE4 F000 00411         MOVFF   PREINC1, r0x01
+009A CFE4 F000 00412         MOVFF   PREINC1, r0x00
+009E 0012      00413         RETURN  
+               00414 
+               00415 ; ; Starting pCode block
+               00416 S_time__clear_secs      code
+0000           00417 _clear_secs:
+               00418 ;       .line   146; time.c     void clear_secs(){
+0000 C000 FFE5 00419         MOVFF   r0x00, POSTDEC1
+0004 C000 FFE5 00420         MOVFF   r0x01, POSTDEC1
+               00421 ;       .line   148; time.c     mins_meter += ((meter_range - secs_meter) / num_time_secs);
+0008 C000 F000 00422         MOVFF   _secs_meter, r0x00
+000C 6A00      00423         CLRF    r0x01
+000E 5000      00424         MOVF    r0x00, W
+0010 08F0      00425         SUBLW   0xf0
+0012 6E00      00426         MOVWF   r0x00
+0014 0E00      00427         MOVLW   0x00
+0016 5600      00428         SUBFWB  r0x01, F
+0018 6AE5      00429         CLRF    POSTDEC1
+001A 0E3C      00430         MOVLW   0x3c
+001C 6EE5      00431         MOVWF   POSTDEC1
+001E 5000      00432         MOVF    r0x01, W
+gpasm-0.13.4 beta               time.asm    7-10-2008  00:58:19          PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0020 6EE5      00433         MOVWF   POSTDEC1
+0022 5000      00434         MOVF    r0x00, W
+0024 6EE5      00435         MOVWF   POSTDEC1
+0026 EC00 F000 00436         CALL    __divsint
+002A 6E00      00437         MOVWF   r0x00
+002C 0E04      00438         MOVLW   0x04
+002E 26E1      00439         ADDWF   FSR1L, F
+0030 C000 F000 00440         MOVFF   _mins_meter, r0x01
+0034 5000      00441         MOVF    r0x00, W
+0036 2400      00442         ADDWF   r0x01, W
+0038 0000      00443         BANKSEL _mins_meter
+003A 6F00      00444         MOVWF   _mins_meter, B
+               00445 ;       .line   151; time.c     ratio_count_secs = num_time_secs;
+003C 0E3C      00446         MOVLW   0x3c
+003E 0000      00447         BANKSEL _ratio_count_secs
+0040 6F00      00448         MOVWF   _ratio_count_secs, B
+               00449 ;       .line   152; time.c     secs_meter = meter_range;
+0042 0EF0      00450         MOVLW   0xf0
+0044 0000      00451         BANKSEL _secs_meter
+0046 6F00      00452         MOVWF   _secs_meter, B
+0048 CFE4 F000 00453         MOVFF   PREINC1, r0x01
+004C CFE4 F000 00454         MOVFF   PREINC1, r0x00
+0050 0012      00455         RETURN  
+               00456 
+               00457 ; ; Starting pCode block
+               00458 S_time__inc_hours       code
+0000           00459 _inc_hours:
+0000 0000      00460         BANKSEL _hours_meter
+               00461 ;       .line   135; time.c     hours_meter--;
+0002 0700      00462         DECF    _hours_meter, F, B
+               00463 ;       .line   136; time.c     if (!hours_meter){
+0004 5100      00464         MOVF    _hours_meter, W, B
+0006 E100      00465         BNZ     _00146_DS_
+               00466 ;       .line   137; time.c     hours_meter = meter_range;
+0008 0EF0      00467         MOVLW   0xf0
+               00468 ; removed redundant BANKSEL
+000A 6F00      00469         MOVWF   _hours_meter, B
+               00470 ;       .line   140; time.c     save_metrics();
+000C EC00 F000 00471         CALL    _trigger_save_eeprom
+0010           00472 _00146_DS_:
+0010 0012      00473         RETURN  
+               00474 
+               00475 ; ; Starting pCode block
+               00476 S_time__inc_mins        code
+0000           00477 _inc_mins:
+0000 0000      00478         BANKSEL _mins_meter
+               00479 ;       .line   123; time.c     mins_meter--;
+0002 0700      00480         DECF    _mins_meter, F, B
+               00481 ;       .line   124; time.c     if (!mins_meter)
+0004 5100      00482         MOVF    _mins_meter, W, B
+0006 E100      00483         BNZ     _00136_DS_
+               00484 ;       .line   125; time.c     mins_meter = meter_range;
+0008 0EF0      00485         MOVLW   0xf0
+               00486 ; removed redundant BANKSEL
+gpasm-0.13.4 beta               time.asm    7-10-2008  00:58:19          PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+000A 6F00      00487         MOVWF   _mins_meter, B
+000C           00488 _00136_DS_:
+000C 0000      00489         BANKSEL _ratio_count_mins
+               00490 ;       .line   126; time.c     ratio_count_mins--;
+000E 0700      00491         DECF    _ratio_count_mins, F, B
+               00492 ;       .line   127; time.c     if (!ratio_count_mins){
+0010 5100      00493         MOVF    _ratio_count_mins, W, B
+0012 E100      00494         BNZ     _00139_DS_
+               00495 ;       .line   128; time.c     ratio_count_mins = num_time_hours;
+0014 0E18      00496         MOVLW   0x18
+               00497 ; removed redundant BANKSEL
+0016 6F00      00498         MOVWF   _ratio_count_mins, B
+               00499 ;       .line   130; time.c     inc_hours();
+0018 EC00 F000 00500         CALL    _inc_hours
+001C           00501 _00139_DS_:
+001C 0012      00502         RETURN  
+               00503 
+               00504 ; ; Starting pCode block
+               00505 S_time__do_time_int     code
+0000           00506 _do_time_int:
+               00507 ;       .line   70; time.c      void do_time_int(){
+0000 C000 FFE5 00508         MOVFF   r0x00, POSTDEC1
+0004 C000 FFE5 00509         MOVFF   r0x01, POSTDEC1
+0008 C000 FFE5 00510         MOVFF   r0x02, POSTDEC1
+000C C000 FFE5 00511         MOVFF   r0x03, POSTDEC1
+0010 0000      00512         BANKSEL _ratio_count_tics
+               00513 ;       .line   73; time.c      ratio_count_tics--;
+0012 0700      00514         DECF    _ratio_count_tics, F, B
+               00515 ;       .line   74; time.c      if (!ratio_count_tics){
+0014 5100      00516         MOVF    _ratio_count_tics, W, B
+0016 A4D8      00517         BTFSS   STATUS, 2
+0018 D000      00518         BRA     _00122_DS_
+               00519 ;       .line   75; time.c      ratio_count_tics = num_time_tics;
+001A 0E08      00520         MOVLW   0x08
+               00521 ; removed redundant BANKSEL
+001C 6F00      00522         MOVWF   _ratio_count_tics, B
+001E 0000      00523         BANKSEL _secs_meter
+               00524 ;       .line   78; time.c      if (!(secs_meter % 4))
+0020 5100      00525         MOVF    _secs_meter, W, B
+0022 0B03      00526         ANDLW   0x03
+0024 E100      00527         BNZ     _00110_DS_
+               00528 ;       .line   79; time.c      inc_metric_running_time();
+0026 C000 F000 00529         MOVFF   _eeprom_data, r0x00
+002A C000 F000 00530         MOVFF   (_eeprom_data + 1), r0x01
+002E C000 F000 00531         MOVFF   (_eeprom_data + 2), r0x02
+0032 C000 F000 00532         MOVFF   (_eeprom_data + 3), r0x03
+0036 2A00      00533         INCF    r0x00, F
+0038 B0D8      00534         BTFSC   STATUS, 0
+003A 2A00      00535         INCF    r0x01, F
+003C B0D8      00536         BTFSC   STATUS, 0
+003E 2A00      00537         INCF    r0x02, F
+0040 B0D8      00538         BTFSC   STATUS, 0
+0042 2A00      00539         INCF    r0x03, F
+0044 5000      00540         MOVF    r0x00, W
+gpasm-0.13.4 beta               time.asm    7-10-2008  00:58:19          PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0046 0000      00541         BANKSEL _eeprom_data
+0048 6F00      00542         MOVWF   _eeprom_data, B
+004A 5000      00543         MOVF    r0x01, W
+               00544 ; removed redundant BANKSEL
+004C 6F00      00545         MOVWF   (_eeprom_data + 1), B
+004E 5000      00546         MOVF    r0x02, W
+               00547 ; removed redundant BANKSEL
+0050 6F00      00548         MOVWF   (_eeprom_data + 2), B
+0052 5000      00549         MOVF    r0x03, W
+               00550 ; removed redundant BANKSEL
+0054 6F00      00551         MOVWF   (_eeprom_data + 3), B
+0056           00552 _00110_DS_:
+0056 0000      00553         BANKSEL _secs_meter
+               00554 ;       .line   81; time.c      secs_meter--;
+0058 0700      00555         DECF    _secs_meter, F, B
+               00556 ;       .line   82; time.c      if (!secs_meter){
+005A 5100      00557         MOVF    _secs_meter, W, B
+005C E100      00558         BNZ     _00117_DS_
+               00559 ;       .line   83; time.c      secs_meter = meter_range;
+005E 0EF0      00560         MOVLW   0xf0
+               00561 ; removed redundant BANKSEL
+0060 6F00      00562         MOVWF   _secs_meter, B
+               00563 ;       .line   96; time.c      read_time_from_ds3231();
+0062 EC00 F000 00564         CALL    _read_time_from_ds3231
+               00565 ;       .line   100; time.c     if (ds3231_time.secs){
+0066 C000 F000 00566         MOVFF   _ds3231_time, r0x00
+006A 5000      00567         MOVF    r0x00, W
+006C E000      00568         BZ      _00117_DS_
+               00569 ;       .line   101; time.c     if (ds3231_time.secs > num_time_secs / 2){
+006E 0E1F      00570         MOVLW   0x1f
+0070 5C00      00571         SUBWF   r0x00, W
+0072 E300      00572         BNC     _00112_DS_
+0074 0000      00573         BANKSEL _osctune_shadow
+               00574 ;       .line   103; time.c     osctune_shadow--;
+0076 0700      00575         DECF    _osctune_shadow, F, B
+               00576 ;       .line   104; time.c     OSCTUNE = osctune_shadow;
+0078 C000 F000 00577         MOVFF   _osctune_shadow, _OSCTUNE
+007C D000      00578         BRA     _00117_DS_
+007E           00579 _00112_DS_:
+007E 0000      00580         BANKSEL _osctune_shadow
+               00581 ;       .line   107; time.c     osctune_shadow++;
+0080 2B00      00582         INCF    _osctune_shadow, F, B
+               00583 ;       .line   108; time.c     OSCTUNE = osctune_shadow;
+0082 C000 F000 00584         MOVFF   _osctune_shadow, _OSCTUNE
+0086           00585 _00117_DS_:
+0086 0000      00586         BANKSEL _ratio_count_secs
+               00587 ;       .line   113; time.c     ratio_count_secs--;
+0088 0700      00588         DECF    _ratio_count_secs, F, B
+               00589 ;       .line   114; time.c     if (!ratio_count_secs){
+008A 5100      00590         MOVF    _ratio_count_secs, W, B
+008C E100      00591         BNZ     _00122_DS_
+               00592 ;       .line   115; time.c     ratio_count_secs = num_time_mins;
+008E 0E3C      00593         MOVLW   0x3c
+               00594 ; removed redundant BANKSEL
+gpasm-0.13.4 beta               time.asm    7-10-2008  00:58:19          PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+0090 6F00      00595         MOVWF   _ratio_count_secs, B
+               00596 ;       .line   117; time.c     inc_mins();
+0092 EC00 F000 00597         CALL    _inc_mins
+0096           00598 _00122_DS_:
+0096 CFE4 F000 00599         MOVFF   PREINC1, r0x03
+009A CFE4 F000 00600         MOVFF   PREINC1, r0x02
+009E CFE4 F000 00601         MOVFF   PREINC1, r0x01
+00A2 CFE4 F000 00602         MOVFF   PREINC1, r0x00
+00A6 0012      00603         RETURN  
+               00604 
+               00605 ; ; Starting pCode block
+               00606 S_time__init_time       code
+0000           00607 _init_time:
+               00608 ;       .line   54; time.c      init_ds3231();
+0000 EC00 F000 00609         CALL    _init_ds3231
+               00610 ;       .line   55; time.c      load_time_from_rtc();
+0004 EC00 F000 00611         CALL    _load_time_from_rtc
+0008 0012      00612         RETURN  
+               00613 
+               00614 
+               00615 
+               00616 ; Statistics:
+               00617 ; code size:      750 (0x02ee) bytes ( 0.57%)
+               00618 ;                 375 (0x0177) words
+               00619 ; udata size:       1 (0x0001) bytes ( 1.56%)
+               00620 ; access size:      6 (0x0006) bytes
+               00621 
+               00622 
+gpasm-0.13.4 beta               time.asm    7-10-2008  00:58:19          PAGE 13
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+FSR1L                             00000FE1
+FSR2L                             00000FD9
+POSTDEC1                          00000FE5
+PREINC1                           00000FE4
+PRODL                             00000FF3
+STATUS                            00000FD8
+_00110_DS_                        00000056
+_00112_DS_                        0000007E
+_00117_DS_                        00000086
+_00122_DS_                        00000096
+_00136_DS_                        0000000C
+_00139_DS_                        0000001C
+_00146_DS_                        00000010
+_ADCON0                           00000000
+_ADCON0bits                       00000000
+_ADCON1                           00000000
+_ADCON1bits                       00000000
+_ADCON2                           00000000
+_ADCON2bits                       00000000
+_ADRESH                           00000000
+_ADRESL                           00000000
+_BAUDCTL                          00000000
+_BSR                              00000000
+_CCP1CON                          00000000
+_CCP1CONbits                      00000000
+_CCPR1H                           00000000
+_CCPR1L                           00000000
+_ECCPAS                           00000000
+_ECCPASbits                       00000000
+_EEADR                            00000000
+_EECON1                           00000000
+_EECON1bits                       00000000
+_EECON2                           00000000
+_EEDATA                           00000000
+_FSR0H                            00000000
+_FSR0L                            00000000
+_FSR1H                            00000000
+_FSR1L                            00000000
+_FSR2H                            00000000
+_FSR2L                            00000000
+_INDF0                            00000000
+_INDF1                            00000000
+_INDF2                            00000000
+_INTCON                           00000000
+_INTCON2                          00000000
+_INTCON2bits                      00000000
+_INTCON3                          00000000
+_INTCON3bits                      00000000
+_INTCONbits                       00000000
+_IPR1                             00000000
+_IPR1bits                         00000000
+_IPR2                             00000000
+_IPR2bits                         00000000
+gpasm-0.13.4 beta               time.asm    7-10-2008  00:58:19          PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_LATA                             00000000
+_LATAbits                         00000000
+_LATB                             00000000
+_LATBbits                         00000000
+_LVDCON                           00000000
+_LVDCONbits                       00000000
+_OSCCON                           00000000
+_OSCCONbits                       00000000
+_OSCTUNE                          00000F9B
+_PCL                              00000000
+_PCLATH                           00000000
+_PCLATU                           00000000
+_PIE1                             00000000
+_PIE1bits                         00000000
+_PIE2                             00000000
+_PIE2bits                         00000000
+_PIR1                             00000000
+_PIR1bits                         00000000
+_PIR2                             00000000
+_PIR2bits                         00000000
+_PLUSW0                           00000000
+_PLUSW1                           00000000
+_PLUSW2                           00000000
+_PORTA                            00000000
+_PORTAbits                        00000000
+_PORTB                            00000000
+_PORTBbits                        00000000
+_POSTDEC0                         00000000
+_POSTDEC1                         00000000
+_POSTDEC2                         00000000
+_POSTINC0                         00000000
+_POSTINC1                         00000000
+_POSTINC2                         00000000
+_PR2                              00000000
+_PREINC0                          00000000
+_PREINC1                          00000000
+_PREINC2                          00000000
+_PRODH                            00000000
+_PRODL                            00000000
+_RCON                             00000000
+_RCONbits                         00000000
+_RCREG                            00000000
+_RCSTA                            00000000
+_RCSTAbits                        00000000
+_SPBRG                            00000000
+_SPBRGH                           00000000
+_STATUS                           00000000
+_STATUSbits                       00000000
+_STKPTR                           00000000
+_STKPTRbits                       00000000
+_T0CON                            00000000
+_T1CON                            00000000
+_T1CONbits                        00000000
+_T2CON                            00000000
+gpasm-0.13.4 beta               time.asm    7-10-2008  00:58:19          PAGE 15
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+_T2CONbits                        00000000
+_T3CON                            00000000
+_T3CONbits                        00000000
+_TABLAT                           00000000
+_TBLPTRH                          00000000
+_TBLPTRL                          00000000
+_TBLPTRU                          00000000
+_TMR0H                            00000000
+_TMR0L                            00000000
+_TMR1H                            00000000
+_TMR1L                            00000000
+_TMR2                             00000000
+_TMR3H                            00000000
+_TMR3L                            00000000
+_TOSH                             00000000
+_TOSL                             00000000
+_TOSU                             00000000
+_TRISA                            00000000
+_TRISAbits                        00000000
+_TRISB                            00000000
+_TRISBbits                        00000000
+_TXREG                            00000000
+_TXSTA                            00000000
+_TXSTAbits                        00000000
+_WDTCON                           00000000
+_WDTCONbits                       00000000
+_WREG                             00000000
+__18F1320                         00000001
+__divsint                         00000000
+__modsint                         00000000
+_clear_secs                       00000000
+_do_time_int                      00000000
+_ds3231_time                      00000000
+_eeprom_data                      00000000
+_hours_meter                      00000000
+_inc_hours                        00000000
+_inc_mins                         00000000
+_init_ds3231                      00000000
+_init_time                        00000000
+_load_time_from_rtc               00000000
+_mins_meter                       00000000
+_osctune_shadow                   00000003
+_ratio_count_mins                 00000000
+_ratio_count_secs                 00000001
+_ratio_count_tics                 00000002
+_read_time_from_ds3231            00000000
+_save_time_to_rtc                 00000000
+_secs_meter                       00000000
+_trigger_save_eeprom              00000000
+_write_time_to_ds3231             00000000
+r0x00                             00000000
+r0x01                             00000001
+r0x02                             00000002
+r0x03                             00000003
+gpasm-0.13.4 beta               time.asm    7-10-2008  00:58:19          PAGE 16
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+ 
+r0x04                             00000004
+r0x05                             00000005
+
+
+Errors   :       0
+Warnings :       0 reported,       0 suppressed
+Messages :       0 reported,       0 suppressed
+
