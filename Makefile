@@ -46,9 +46,19 @@ all: $(OUTPUT_HEX)
 $(OUTPUT_HEX): $(OBJS)
 	$(GPLINK) $(LDFLAGS) -o $(OUTPUT_HEX) $(OBJS) $(LIBS)
 
-burn: all init_eeprom.dat
+combined.hex: all init_eeprom.dat 
 	srec_cat $(OUTPUT_HEX) -Intel init_eeprom.dat -Intel -ignore-checksums -Output -Intel > combined.hex
+
+burn: combined.hex
 	pk2 -progress -write combined.hex
+
+burned/combined.hex: combined.hex 
+	mkdir burned
+	cp *.cod *.cof *.hex *.lst burned/
+	git add burned/*
+
+archived_burn: burned/combined.hex 
+	pk2 -progress -write burned/combined.hex
 
 depend: ${SRCS}
 	makedepend -f.depend -D$(PROCESSOR) ${INCLUDE} ${SRCS}
