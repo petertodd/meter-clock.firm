@@ -1,4 +1,4 @@
-gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE  1
+gpasm-0.13.4 beta               ds3231.asm  11-9-2008  01:07:48          PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -7,7 +7,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                00001 ;--------------------------------------------------------
                00002 ; File Created by SDCC : FreeWare ANSI-C Compiler
                00003 ; Version 2.6.0 #4309 (Sep 23 2007)
-               00004 ; This file generated Thu Jul 10 00:58:18 2008
+               00004 ; This file generated Sun Nov  9 01:07:48 2008
                00005 ;--------------------------------------------------------
                00006 ; PIC16 port for the Microchip 16-bit core micros
                00007 ;--------------------------------------------------------
@@ -58,7 +58,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                00052         extern _WDTCONbits
                00053         extern _LVDCONbits
                00054         extern _OSCCONbits
-gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE  2
+gpasm-0.13.4 beta               ds3231.asm  11-9-2008  01:07:48          PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -118,7 +118,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                00106         extern _T0CON
                00107         extern _TMR0L
                00108         extern _TMR0H
-gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE  3
+gpasm-0.13.4 beta               ds3231.asm  11-9-2008  01:07:48          PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -178,7 +178,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
   00000FE8     00160 WREG    equ     0xfe8
   00000FE1     00161 FSR1L   equ     0xfe1
   00000FD9     00162 FSR2L   equ     0xfd9
-gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE  4
+gpasm-0.13.4 beta               ds3231.asm  11-9-2008  01:07:48          PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -238,7 +238,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 003C 6EE5      00214         MOVWF   POSTDEC1
 003E EC00 F000 00215         CALL    _i2c_write
 0042 2AE1      00216         INCF    FSR1L, F
-gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE  5
+gpasm-0.13.4 beta               ds3231.asm  11-9-2008  01:07:48          PAGE  5
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -298,7 +298,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 004C 6EE5      00268         MOVWF   POSTDEC1
 004E EC00 F000 00269         CALL    _read_from_ds3231
 0052 6E00      00270         MOVWF   r0x00
-gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE  6
+gpasm-0.13.4 beta               ds3231.asm  11-9-2008  01:07:48          PAGE  6
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -358,7 +358,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 00B6 6B00      00322         CLRF    (_eeprom_data + 22), B
                00323 ; removed redundant BANKSEL
 00B8 6B00      00324         CLRF    (_eeprom_data + 23), B
-gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE  7
+gpasm-0.13.4 beta               ds3231.asm  11-9-2008  01:07:48          PAGE  7
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -418,7 +418,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                00376 S_ds3231__to_bcd        code
 0000           00377 _to_bcd:
                00378 ;       .line   38; ds3231.c    uint8_t to_bcd(uint8_t d){
-gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE  8
+gpasm-0.13.4 beta               ds3231.asm  11-9-2008  01:07:48          PAGE  8
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -478,7 +478,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0018 1400      00430         ANDWF   r0x00, W
 001A 6E00      00431         MOVWF   r0x01
 001C 0EF0      00432         MOVLW   0xf0
-gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE  9
+gpasm-0.13.4 beta               ds3231.asm  11-9-2008  01:07:48          PAGE  9
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -516,7 +516,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                00462 ; access size:      3 (0x0003) bytes
                00463 
                00464 
-gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE 10
+gpasm-0.13.4 beta               ds3231.asm  11-9-2008  01:07:48          PAGE 10
 
 
 SYMBOL TABLE
@@ -575,7 +575,7 @@ _IPR2bits                         00000000
 _LATA                             00000000
 _LATAbits                         00000000
 _LATB                             00000000
-gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE 11
+gpasm-0.13.4 beta               ds3231.asm  11-9-2008  01:07:48          PAGE 11
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -635,7 +635,7 @@ _T2CONbits                        00000000
 _T3CON                            00000000
 _T3CONbits                        00000000
 _TABLAT                           00000000
-gpasm-0.13.4 beta               ds3231.asm  7-10-2008  00:58:18          PAGE 12
+gpasm-0.13.4 beta               ds3231.asm  11-9-2008  01:07:48          PAGE 12
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT

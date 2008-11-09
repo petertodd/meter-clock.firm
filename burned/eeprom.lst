@@ -1,4 +1,4 @@
-gpasm-0.13.4 beta               eeprom.asm  7-10-2008  00:58:18          PAGE  1
+gpasm-0.13.4 beta               eeprom.asm  11-9-2008  01:07:48          PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -7,7 +7,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                00001 ;--------------------------------------------------------
                00002 ; File Created by SDCC : FreeWare ANSI-C Compiler
                00003 ; Version 2.6.0 #4309 (Sep 23 2007)
-               00004 ; This file generated Thu Jul 10 00:58:18 2008
+               00004 ; This file generated Sun Nov  9 01:07:48 2008
                00005 ;--------------------------------------------------------
                00006 ; PIC16 port for the Microchip 16-bit core micros
                00007 ;--------------------------------------------------------
@@ -58,7 +58,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                00052         extern _LVDCONbits
                00053         extern _OSCCONbits
                00054         extern _STATUSbits
-gpasm-0.13.4 beta               eeprom.asm  7-10-2008  00:58:18          PAGE  2
+gpasm-0.13.4 beta               eeprom.asm  11-9-2008  01:07:48          PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -118,7 +118,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                00106         extern _TMR0H
                00107         extern _STATUS
                00108         extern _FSR2L
-gpasm-0.13.4 beta               eeprom.asm  7-10-2008  00:58:18          PAGE  3
+gpasm-0.13.4 beta               eeprom.asm  11-9-2008  01:07:48          PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -178,7 +178,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                00160         idata
                00161 _incremental_save_counter       db      0x24
                00162 
-gpasm-0.13.4 beta               eeprom.asm  7-10-2008  00:58:18          PAGE  4
+gpasm-0.13.4 beta               eeprom.asm  11-9-2008  01:07:48          PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -238,7 +238,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0036 2200      00214         ADDWFC  r0x01, F
 0038 6AE8      00215         CLRF    WREG
 003A 2200      00216         ADDWFC  r0x02, F
-gpasm-0.13.4 beta               eeprom.asm  7-10-2008  00:58:18          PAGE  5
+gpasm-0.13.4 beta               eeprom.asm  11-9-2008  01:07:48          PAGE  5
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -298,7 +298,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0022 0E80      00268         MOVLW   0x80
 0024 6E00      00269         MOVWF   r0x02
 0026 5000      00270         MOVF    _EEADR, W
-gpasm-0.13.4 beta               eeprom.asm  7-10-2008  00:58:18          PAGE  6
+gpasm-0.13.4 beta               eeprom.asm  11-9-2008  01:07:48          PAGE  6
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -343,7 +343,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                00307 ; access size:      3 (0x0003) bytes
                00308 
                00309 
-gpasm-0.13.4 beta               eeprom.asm  7-10-2008  00:58:18          PAGE  7
+gpasm-0.13.4 beta               eeprom.asm  11-9-2008  01:07:48          PAGE  7
 
 
 SYMBOL TABLE
@@ -402,7 +402,7 @@ _IPR2                             00000000
 _IPR2bits                         00000000
 _LATA                             00000000
 _LATAbits                         00000000
-gpasm-0.13.4 beta               eeprom.asm  7-10-2008  00:58:18          PAGE  8
+gpasm-0.13.4 beta               eeprom.asm  11-9-2008  01:07:48          PAGE  8
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -462,7 +462,7 @@ _T2CON                            00000000
 _T2CONbits                        00000000
 _T3CON                            00000000
 _T3CONbits                        00000000
-gpasm-0.13.4 beta               eeprom.asm  7-10-2008  00:58:18          PAGE  9
+gpasm-0.13.4 beta               eeprom.asm  11-9-2008  01:07:48          PAGE  9
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT

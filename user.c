@@ -46,16 +46,15 @@ void init_user(){
     // Oooh! Metrics/self-test display mode! Don't see that very often...
     inc_metric_meta();
 
-    // High and midrange tests.
-    if (hours_switch_raw || mins_switch_raw && !secs_switch_raw){
-      if (hours_switch_raw)
-        hours_meter = mins_meter = secs_meter = 1;
-      else
-        hours_meter = mins_meter = secs_meter = meter_range / 2;
-      while (1){
-        save_eeprom_if_needed();
-        do_meters();
-      }
+    // High, midrange and low tests.
+    //
+    // Note that for a bi-polar meter, low is not the same as power off...
+    if (hours_switch_raw && !mins_switch_raw && !secs_switch_raw){
+      hours_meter = mins_meter = secs_meter = 0;
+    } else if (!hours_switch_raw && mins_switch_raw && !secs_switch_raw){
+      hours_meter = mins_meter = secs_meter = meter_range / 2;
+    } else if (!hours_switch_raw && !mins_switch_raw && secs_switch_raw){
+      hours_meter = mins_meter = secs_meter = meter_range - 1;
     }
     else { 
       // Metrics display.
@@ -97,6 +96,10 @@ void init_user(){
           delay10tcy(5);
         }
       }
+    }
+    while (1){
+      save_eeprom_if_needed();
+      do_meters();
     }
   }
 }
